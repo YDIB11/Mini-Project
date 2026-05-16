@@ -32,8 +32,18 @@ src/analysis/    ablation and per-community breakdown (TBD)
 
 ## Setup
 
-```bash
+Create and activate a virtual environment, then install deps:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+
+Re-activate the venv at the start of each new shell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
 ```
 
 Requires `ffmpeg` on PATH for audio extraction.
