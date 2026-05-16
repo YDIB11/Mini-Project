@@ -1,0 +1,66 @@
+# Base config for HateMM multimodal experiments.
+# Encoders are frozen — only the fusion module is trained.
+
+seed: 42
+
+data:
+  root: data/HateMM
+  annotation_csv: data/HateMM/HateMM_annotation.csv
+  # Stratified split on the binary label; fixed by seed for reproducibility.
+  splits:
+    train_frac: 0.8
+    val_frac: 0.1
+    test_frac: 0.1
+
+preprocess:
+  frames:
+    fps: 1              # sample N frames per second
+    max_frames: 32      # cap per video (truncate or evenly subsample)
+    size: 224
+  audio:
+    sample_rate: 16000
+    mono: true
+  asr:
+    model: small        # faster-whisper model size: tiny | base | small | medium | large-v3
+    language: en
+
+features:
+  cache_dir: features/
+  video:
+    encoder: openai/clip-vit-base-patch32
+    freeze: true
+    # Sequence length per video is set by preprocess.frames.max_frames.
+  audio:
+    encoder: facebook/wav2vec2-base-960h
+    freeze: true
+    target_tokens: 64        # mean-pool wav2vec2 hidden states into this many chunks
+  text:
+    encoder: roberta-base
+    freeze: true
+    max_length: 128          # tokens per transcript (truncate/pad)
+
+model:
+  fusion:
+    type: transformer    # transformer | concat_mlp (baseline)
+    d_model: 256
+    n_heads: 4
+    n_layers: 2
+    dropout: 0.1
+  classifier:
+    n_classes: 2         # hate vs non-hate
+
+train:
+  batch_size: 16
+  lr: 1.0e-4
+  weight_decay: 0.01
+  epochs: 20
+  early_stop_patience: 5
+  optimizer: adamw
+
+eval:
+  metrics: [accuracy, macro_f1, auroc, precision, recall]
+  per_community_breakdown: true
+
+# Toggles for the modality-ablation experiments.
+ablation:
+  modalities: [video, audio, text, video+audio, video+text, audio+text, video+audio+text]

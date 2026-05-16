@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data — never committed (HateMM is on cluster storage)
+data/*
+!data/.gitkeep
+
+# Derived artifacts
+cache/
+features/
+checkpoints/
+runs/
+wandb/
+logs/
+outputs/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+
+# Env / secrets
+.env
+.env.local
