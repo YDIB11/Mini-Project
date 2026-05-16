@@ -25,14 +25,14 @@ Thumbs.db
 data/*
 !data/.gitkeep
 
-# Derived artifacts
-cache/
-features/
-checkpoints/
-runs/
-wandb/
-logs/
-outputs/
+# Derived artifacts (top-level dirs only — do not match src/features/)
+/cache/
+/features/
+/checkpoints/
+/runs/
+/wandb/
+/logs/
+/outputs/
 *.pt
 *.pth
 *.ckpt
