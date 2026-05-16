@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import librosa
 import torch
-import torchaudio
 from transformers import AutoFeatureExtractor, AutoModel
 
 
@@ -30,12 +30,7 @@ class AudioEncoder:
     @torch.inference_mode()
     def encode(self, wav_path: Path) -> torch.Tensor:
         """Returns (target_tokens, D) on CPU. Zero-padded if audio is too short."""
-        wav, sr = torchaudio.load(str(wav_path))
-        if wav.shape[0] > 1:
-            wav = wav.mean(dim=0, keepdim=True)
-        if sr != self.sample_rate:
-            wav = torchaudio.functional.resample(wav, sr, self.sample_rate)
-        wav = wav.squeeze(0).numpy()
+        wav, _ = librosa.load(str(wav_path), sr=self.sample_rate, mono=True)
 
         # Chunk to bound peak memory; concatenate hidden states across chunks.
         hidden_chunks: list[torch.Tensor] = []
