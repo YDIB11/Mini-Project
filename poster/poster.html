@@ -453,17 +453,11 @@
       <section class="box">
         <h2>Validation</h2>
 
+<!-- BEGIN_TABLE_1 -->
         <table class="results">
           <caption>Table 1. Modality ablation on the test split (n = 109), mean &plusmn; std over 3 seeds {42, 1337, 2025}.</caption>
           <thead>
-            <tr>
-              <th>Modality</th>
-              <th>Acc</th>
-              <th>F1</th>
-              <th>Prec</th>
-              <th>Rec</th>
-              <th>AUROC</th>
-            </tr>
+            <tr><th>Modality</th><th>Acc</th><th>F1</th><th>Prec</th><th>Rec</th><th>AUROC</th></tr>
           </thead>
           <tbody>
             <tr class="fusion">
@@ -474,21 +468,24 @@
               <td>0.74 &plusmn; 0.08</td>
               <td class="winner">0.88 &plusmn; 0.01</td>
             </tr>
-            <tr><td>Text only</td>
+            <tr>
+              <td>Text only</td>
               <td>0.79 &plusmn; 0.02</td>
               <td>0.78 &plusmn; 0.02</td>
               <td>0.75 &plusmn; 0.06</td>
               <td>0.73 &plusmn; 0.08</td>
               <td>0.83 &plusmn; 0.02</td>
             </tr>
-            <tr><td>Video only</td>
+            <tr>
+              <td>Video only</td>
               <td>0.72 &plusmn; 0.03</td>
               <td>0.71 &plusmn; 0.02</td>
               <td>0.64 &plusmn; 0.06</td>
               <td>0.68 &plusmn; 0.06</td>
               <td>0.81 &plusmn; 0.01</td>
             </tr>
-            <tr><td>Audio only</td>
+            <tr>
+              <td>Audio only</td>
               <td>0.67 &plusmn; 0.02</td>
               <td>0.67 &plusmn; 0.03</td>
               <td>0.56 &plusmn; 0.02</td>
@@ -497,33 +494,28 @@
             </tr>
           </tbody>
         </table>
+        <!-- END_TABLE_1 -->
 
+        <!-- BEGIN_TABLE_2 -->
         <table class="results" style="margin-top: 4mm;">
           <caption>Table 2. Per-target-community test accuracy (n &ge; 15), mean &plusmn; std over 3 seeds.</caption>
           <thead>
-            <tr>
-              <th>Community</th>
-              <th>n</th>
-              <th>Fusion</th>
-              <th>Video</th>
-              <th>Audio</th>
-              <th>Text</th>
-            </tr>
+            <tr><th>Community</th><th>n</th><th>Fusion</th><th>Video</th><th>Audio</th><th>Text</th></tr>
           </thead>
           <tbody>
             <tr>
               <td>Blacks</td><td>46</td>
-              <td class="winner">0.75 &plusmn; 0.06</td>
+              <td class="winner">0.75 &plusmn; 0.05</td>
               <td>0.70 &plusmn; 0.04</td>
               <td>0.59 &plusmn; 0.06</td>
               <td>0.73 &plusmn; 0.03</td>
             </tr>
             <tr>
               <td>Others</td><td>39</td>
-              <td>0.84 &plusmn; 0.02</td>
+              <td>0.84 &plusmn; 0.01</td>
               <td>0.74 &plusmn; 0.09</td>
               <td>0.68 &plusmn; 0.11</td>
-              <td class="winner">0.86 &plusmn; 0.05</td>
+              <td class="winner">0.85 &plusmn; 0.05</td>
             </tr>
             <tr>
               <td>Jews</td><td>15</td>
@@ -534,6 +526,7 @@
             </tr>
           </tbody>
         </table>
+        <!-- END_TABLE_2 -->
 
         <div class="chart" style="margin-top: 4mm;">
           <img src="bar_chart.png" alt="Accuracy and AUROC bar chart across the four models, multi-seed">
