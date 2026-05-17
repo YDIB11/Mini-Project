@@ -15,7 +15,10 @@ import torch
 import yaml
 
 from .data import make_loader, make_splits
-from .metrics import compute_metrics, per_community_breakdown
+from .metrics import (
+    compute_metrics, compute_metrics_ci,
+    per_community_breakdown, per_community_breakdown_ci,
+)
 from .models.fusion import MultimodalFusion
 
 
@@ -71,14 +74,24 @@ def main() -> None:
     preds = np.concatenate(preds)
     probs = np.concatenate(probs)
 
+    overall = compute_metrics(labels, preds, probs)
+    overall_ci = compute_metrics_ci(labels, preds, probs)
+    per_comm = per_community_breakdown(labels, preds, communities)
+    per_comm_ci = per_community_breakdown_ci(labels, preds, communities)
+
     report = {
         "modalities": list(modalities),
         "split": args.split,
         "n": int(labels.shape[0]),
-        "overall": {k: round(v, 4) for k, v in compute_metrics(labels, preds, probs).items()},
+        "overall": {k: round(v, 4) for k, v in overall.items()},
+        "overall_ci": {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in overall_ci.items()},
         "per_community": {
             c: {k: round(v, 4) for k, v in m.items()}
-            for c, m in per_community_breakdown(labels, preds, communities).items()
+            for c, m in per_comm.items()
+        },
+        "per_community_ci": {
+            c: {k: [round(lo, 4), round(hi, 4)] for k, (lo, hi) in m.items()}
+            for c, m in per_comm_ci.items()
         },
     }
     print(json.dumps(report, indent=2))

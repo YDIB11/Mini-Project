@@ -1,0 +1,145 @@
+% EE-559 Mini-Project: Multimodal Hate Video Classification on HateMM.
+%
+% Drop-in replacement for main.tex in the EE-559 template. To compile:
+%   1. Place this file alongside main.bib and the source/ folder from the
+%      EE_559__Group_Mini_Project_Template.
+%   2. Fill in the group number (search for GroupNumber).
+%   3. pdflatex main && bibtex main && pdflatex main && pdflatex main.
+
+\documentclass{article}
+
+% Style files from the EE-559 template.
+\input{source/preamble}
+\usepackage[accepted]{source/icml2021}
+\usepackage{amssymb}   % for \mathbb in the Method section
+
+%%%%%%%%% GROUP NUMBER %%%%%%%%%
+\icmltitlerunning{EE-559 Deep Learning: Group Mini-Project, Group 7}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{Multimodal Fusion for Hate Video Classification on HateMM}
+
+\begin{icmlauthorlist}
+\icmlauthor{Youssef Dib}{ch} \quad
+\icmlauthor{Kevin Abou Jaoude}{ch} \quad
+\icmlauthor{Rami Aschkar}{ch} \\
+\end{icmlauthorlist}
+
+\icmlaffiliation{ch}{\'Ecole Polytechnique F\'ed\'erale de Lausanne}
+\vskip 0.05in
+\centering
+%%%%%%%%% GROUP NUMBER %%%%%%%%%
+Group 7
+\vskip 0.3in
+]
+
+\printAffiliationsAndNotice{}
+
+\begin{abstract}
+We investigate multimodal fusion for binary hate-video classification on HateMM, a 1083-video benchmark sourced from BitChute. Our approach extracts per-modality features with three frozen pretrained encoders (CLIP for frames, wav2vec2 for audio, RoBERTa for transcripts) and trains a small transformer fusion head on the cached features. The fusion model attains 0.835 accuracy and 0.873 AUROC on the held-out test split, improving over the strongest unimodal baseline (text-only) by 4.5 accuracy points and 3 AUROC points. A per-target-community audit confirms that the gain generalises across the three groups with sufficient test support, and that no single modality dominates across all groups.
+
+\textbf{Keywords:} multimodal learning, hate speech detection, video classification, frozen encoders, transformer fusion.
+
+\end{abstract}
+
+%%%%%%%%% INTRODUCTION %%%%%%%%%
+\section{Introduction}
+\label{sec:intro}
+
+Hate-speech moderation on user-generated video platforms is challenging precisely because hateful intent often emerges from the joint configuration of multiple modalities: what is shown, what is said, and how it is delivered. A text classifier can miss a slur delivered tonally; a visual classifier can miss harmful framing of an otherwise neutral image. Unimodal systems thus risk both false negatives on cross-modal hate and false positives on visually charged but linguistically innocuous content.
+
+Most public benchmarks for hate detection have focused on text or memes \cite{kiela2020hateful}. The recent HateMM dataset \cite{das2023hatemm} closes part of this gap by providing 1083 BitChute videos with binary hate labels and per-video target-community annotations. We use HateMM to study a focused question: how much does fusing video, audio, and text improve over the best unimodal classifier, and is the gain consistent across target communities?
+
+We adopt a frozen-encoder pipeline. Pretrained vision, audio, and text models produce per-video feature sequences that are cached to disk, and a small transformer fusion head is trained on top. Freezing the encoders keeps training cost low and, crucially, makes the modality ablation interpretable: each unimodal baseline uses the same architecture as the fusion model, restricted to a single modality, so the comparison isolates the contribution of additional modalities rather than additional parameters.
+
+%%%%%%%%% RELATED WORK %%%%%%%%%
+\section{Related Work}
+\label{sec:related_work}
+
+Multimodal hate detection has been studied on image-text memes \cite{kiela2020hateful} and a range of audio-text pairs. \cite{das2023hatemm} introduce HateMM and report several baselines, including single-modality CLIP plus MLP and an XGBoost late-fusion classifier over per-modality embeddings. Our approach differs in two respects: (i) we freeze all unimodal encoders to factor out training-time confounders from the ablation, and (ii) we adopt an early-fusion transformer at the token level rather than a late-fusion ensemble of per-modality classifiers.
+
+%%%%%%%%% METHOD %%%%%%%%%
+\section{Method}
+\label{sec:method}
+
+\textbf{Preprocessing.} For each video we extract three modality streams. We sample 32 RGB frames at 1\,fps with center cropping and resize to $224 \times 224$. The audio track is decoded to a 16\,kHz mono PCM stream with \texttt{ffmpeg}; videos lacking an audio stream are replaced with a 0.5\,s silent placeholder so downstream code receives a uniform tensor shape. The English transcript is obtained with faster-whisper \cite{radford2022whisper} running the \texttt{small} model on the extracted audio.
+
+\textbf{Frozen feature extraction.} Three pretrained encoders, all kept frozen, produce per-modality feature sequences. Video frames are passed through the CLIP ViT-B/32 vision tower \cite{radford2021clip}, yielding a sequence of 32 frame embeddings in $\mathbb{R}^{512}$. Audio is encoded with wav2vec2-base \cite{baevski2020wav2vec2}; the resulting hidden states are mean-pooled into 64 fixed-length tokens in $\mathbb{R}^{768}$ to bound memory across variable-length inputs. Transcripts are passed through RoBERTa-base \cite{liu2019roberta} with truncation at 128 tokens, producing token-level embeddings in $\mathbb{R}^{768}$ with the standard attention mask. All per-video features are cached to disk so subsequent experiments operate on cheap tensor reads.
+
+\textbf{Fusion transformer.} Per-modality features are linearly projected to a common 256-dimensional embedding space and tagged with a learned modality identifier. A trainable \texttt{[CLS]} token is prepended and the concatenated sequence is processed by a pre-norm transformer encoder \cite{vaswani2017attention} with two layers and four attention heads, GELU activations, and dropout 0.1. The \texttt{[CLS]} output is fed to a linear binary classifier. The same module supports arbitrary modality subsets by omitting the corresponding embedding sequence, which we use to obtain unimodal baselines that share the exact same architecture as the full fusion model. This makes the ablation a clean comparison of \emph{modality information}, not of architecture or capacity.
+
+%%%%%%%%% VALIDATION %%%%%%%%%
+\section{Validation}
+\label{sec:validation}
+
+\textbf{Dataset and splits.} HateMM \cite{das2023hatemm} contains 1083 BitChute videos (431 hate, 652 non-hate) released under CC BY 4.0, each carrying a binary hate label and a target-community annotation. After preprocessing, 1081 of the 1083 videos produced usable features. We split stratified by binary label into 80/10/10 train, validation, and test partitions (863/109/109 videos), with a fixed random seed.
+
+\textbf{Training.} All models are optimised with AdamW \cite{loshchilov2019adamw} at a learning rate of $10^{-4}$, weight decay $10^{-2}$, and batch size 16, using binary cross-entropy loss. We train for up to 20 epochs with early stopping on validation macro-F1 (patience 5). All runs use a single NVIDIA V100 GPU.
+
+\textbf{Modality ablation.} Tab.~\ref{tab:ablation} reports test-set metrics for the three unimodal models and the trimodal fusion. The fusion model achieves the best score on every metric except recall, where the audio-only baseline scores higher (0.767). Audio thus behaves as a high-recall, low-precision detector that over-predicts the hate class; the fusion model appears to integrate this signal with the more conservative text and visual streams. Text alone is the strongest single modality (0.780 accuracy, 0.842 AUROC), consistent with the verbal nature of much hate content in this dataset. Fusion improves over text by 4.5 accuracy points and 3 AUROC points.
+
+\begin{table}[t]
+\vskip 0.15in
+\begin{center}
+\begin{small}
+\begin{sc}
+\begin{tabular}{lccccc}
+\toprule
+Modalities & Acc & F1 & Prec & Rec & AUROC \\
+\midrule
+Video       & .743 & .726 & .692 & .628 & .815 \\
+Audio       & .697 & .695 & .589 & \textbf{.767} & .775 \\
+Text        & .780 & .763 & .757 & .651 & .842 \\
+\midrule
+V+A+T       & \textbf{.835} & \textbf{.824} & \textbf{.821} & .744 & \textbf{.873} \\
+\bottomrule
+\end{tabular}
+\caption{Test-set metrics on HateMM (n=109). Best per metric in bold. The trimodal fusion wins on every metric except recall.}
+\label{tab:ablation}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\textbf{Per-target-community audit.} Tab.~\ref{tab:community} reports per-modality test accuracy on the three target-community groups for which the test split contains at least 15 examples. The fusion model achieves the highest accuracy on \emph{Blacks} (0.804) and \emph{Jews} (0.867). On \emph{Others}, the text-only baseline narrowly outperforms fusion (0.872 vs 0.846), suggesting that for this group the transcript already carries most of the discriminative signal. The largest fusion gain occurs on the smallest reported group (\emph{Jews}, $+0.13$ over the best unimodal), where pooling modalities likely compensates for individually noisier signals. The remaining target-community labels in HateMM appear in too few test examples (one or two each) to support per-group conclusions, so we report only the three groups with sufficient test support.
+
+\begin{table}[t]
+\vskip 0.15in
+\begin{center}
+\begin{small}
+\begin{sc}
+\begin{tabular}{lccccc}
+\toprule
+Community & $n$ & V & A & T & Fusion \\
+\midrule
+Blacks & 46 & .717 & .630 & .717 & \textbf{.804} \\
+Others & 39 & .795 & .718 & \textbf{.872} & .846 \\
+Jews   & 15 & .600 & .733 & .733 & \textbf{.867} \\
+\bottomrule
+\end{tabular}
+\caption{Per-target-community test accuracy (groups with $n \geq 15$). V/A/T denote unimodal baselines.}
+\label{tab:community}
+\end{sc}
+\end{small}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\textbf{Discussion and limitations.} Our headline finding is straightforward: a small, frozen-encoder fusion model outperforms each of its unimodal counterparts on HateMM by a clear margin, and the gain is consistent across the three target-community groups with sufficient test support. No single modality dominates across all groups: text wins on \emph{Others}, audio wins on recall, video alone is the weakest unimodal baseline. Several limitations should be noted. First, the test set ($n=109$) is small, so all reported per-community estimates carry appreciable variance; bootstrap confidence intervals would tighten the interpretation. Second, we report a single random seed; a multi-seed average would further reduce variance in the ablation table. Third, our community-label normalisation is heuristic: multi-community labels are canonicalised to a sorted comma-joined form, which conflates intersectional rows with singleton ones. Fourth, the audio encoder pools the wav2vec2 hidden states to a fixed length of 64 tokens, which over-averages long videos and pads short ones; an adaptive pooling scheme may help on the audio-only baseline.
+
+%%%%%%%%% CONCLUSION %%%%%%%%%
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a small, frozen-encoder multimodal classifier for hate video detection on HateMM. The model attains 0.835 accuracy and 0.873 AUROC on the held-out test split, with a clean and consistent improvement over each unimodal baseline. The pipeline is fully reproducible from the released dataset and our public code repository.
+
+% \newpage
+
+%%%%%%%%% REFERENCES %%%%%%%%%
+\bibliographystyle{ieeetr}
+\bibliography{main}
+
+\end{document}

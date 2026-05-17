@@ -32,13 +32,27 @@ def main() -> None:
                         choices=["video", "audio", "text"])
     parser.add_argument("--run-name", type=str, default=None)
     parser.add_argument("--epochs", type=int, default=None, help="override cfg.train.epochs")
+    parser.add_argument("--seed", type=int, default=None,
+                        help="override cfg.seed for model init / dataloader shuffle; "
+                             "splits stay fixed to cfg.seed for fair multi-seed comparison")
     args = parser.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    torch.manual_seed(cfg["seed"])
+    model_seed = args.seed if args.seed is not None else cfg["seed"]
+
+    import random
+    random.seed(model_seed)
+    np.random.seed(model_seed)
+    torch.manual_seed(model_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(model_seed)
 
     modalities = tuple(args.modalities)
-    run_name = args.run_name or "+".join(modalities)
+    run_name = args.run_name
+    if run_name is None:
+        run_name = "+".join(modalities)
+        if args.seed is not None:
+            run_name = f"{run_name}_seed{args.seed}"
     epochs = args.epochs or cfg["train"]["epochs"]
     bs = cfg["train"]["batch_size"]
 
