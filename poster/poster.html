@@ -159,7 +159,7 @@
   }
   table.results th,
   table.results td {
-    padding: 3mm 3.5mm;
+    padding: 4.5mm 3.5mm;
     text-align: right;
     border-bottom: 0.3mm solid #e2e2e2;
   }
@@ -185,7 +185,7 @@
   .chart img {
     width: 100%;
     height: auto;
-    max-height: 170mm;
+    max-height: 235mm;
     object-fit: contain;
     border: 0.4mm solid #d4d4d4;
     border-radius: 2mm;
@@ -606,6 +606,14 @@
           fusion on every reported group, so fusion delivers a
           calibrated ranking gain rather than a uniform threshold-level
           improvement over a strong text-only baseline.
+        </p>
+        <p>
+          <span class="label">Practical implication.</span>
+          Multimodal fusion is the right choice when downstream
+          consumers use the model's probability rankings (triage, soft
+          flagging, human-in-the-loop review). For a fixed-threshold
+          binary decision policy on this dataset, a text-only baseline
+          is a strong and substantially cheaper alternative.
         </p>
       </section>
 
