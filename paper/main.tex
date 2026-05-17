@@ -38,7 +38,7 @@ Group 7
 \printAffiliationsAndNotice{}
 
 \begin{abstract}
-We investigate multimodal fusion for binary hate-video classification on HateMM, a 1083-video benchmark sourced from BitChute. Our approach extracts per-modality features with three frozen pretrained encoders (CLIP for frames, wav2vec2 for audio, RoBERTa for transcripts) and trains a small transformer fusion head on the cached features. The fusion model attains 0.835 accuracy and 0.873 AUROC on the held-out test split, improving over the strongest unimodal baseline (text-only) by 4.5 accuracy points and 3 AUROC points. A per-target-community audit confirms that the gain generalises across the three groups with sufficient test support, and that no single modality dominates across all groups.
+We investigate multimodal fusion for binary hate-video classification on HateMM, a 1083-video benchmark sourced from BitChute. Our approach extracts per-modality features with three frozen pretrained encoders (CLIP for frames, wav2vec2 for audio, RoBERTa for transcripts) and trains a small transformer fusion head on the cached features. Averaged over three random seeds, the fusion model attains test AUROC of $0.876 \pm 0.012$, a robust 5-point improvement over the strongest unimodal baseline (text-only, AUROC $0.827 \pm 0.016$). On threshold-dependent metrics (accuracy, macro-F1) the fusion model matches the text-only baseline on average with markedly higher per-seed variance, indicating that fusion improves probability ranking more reliably than it improves a fixed-threshold prediction.
 
 \textbf{Keywords:} multimodal learning, hate speech detection, video classification, frozen encoders, transformer fusion.
 
@@ -76,9 +76,9 @@ Multimodal hate detection has been studied on image-text memes \cite{kiela2020ha
 
 \textbf{Dataset and splits.} HateMM \cite{das2023hatemm} contains 1083 BitChute videos (431 hate, 652 non-hate) released under CC BY 4.0, each carrying a binary hate label and a target-community annotation. After preprocessing, 1081 of the 1083 videos produced usable features. We split stratified by binary label into 80/10/10 train, validation, and test partitions (863/109/109 videos), with a fixed random seed.
 
-\textbf{Training.} All models are optimised with AdamW \cite{loshchilov2019adamw} at a learning rate of $10^{-4}$, weight decay $10^{-2}$, and batch size 16, using binary cross-entropy loss. We train for up to 20 epochs with early stopping on validation macro-F1 (patience 5). All runs use a single NVIDIA V100 GPU.
+\textbf{Training.} All models are optimised with AdamW \cite{loshchilov2019adamw} at a learning rate of $10^{-4}$, weight decay $10^{-2}$, and batch size 16, using binary cross-entropy loss. We train for up to 20 epochs with early stopping on validation macro-F1 (patience 5). Each modality configuration is trained under three random seeds $\{42, 1337, 2025\}$, with the data split held fixed across seeds for fair comparison; results below are reported as mean $\pm$ standard deviation across seeds. All runs use a single NVIDIA V100 GPU.
 
-\textbf{Modality ablation.} Tab.~\ref{tab:ablation} reports test-set metrics for the three unimodal models and the trimodal fusion. The fusion model achieves the best score on every metric except recall, where the audio-only baseline scores higher (0.767). Audio thus behaves as a high-recall, low-precision detector that over-predicts the hate class; the fusion model appears to integrate this signal with the more conservative text and visual streams. Text alone is the strongest single modality (0.780 accuracy, 0.842 AUROC), consistent with the verbal nature of much hate content in this dataset. Fusion improves over text by 4.5 accuracy points and 3 AUROC points.
+\textbf{Modality ablation.} Tab.~\ref{tab:ablation} reports test-set metrics for the three unimodal models and the trimodal fusion as mean $\pm$ standard deviation over three seeds. The fusion model achieves the highest AUROC by a robust margin ($0.876 \pm 0.012$), an absolute gain of $4.9$ AUROC points over the strongest unimodal baseline (text, $0.827 \pm 0.016$); the gap exceeds twice the combined standard deviation. On threshold-dependent metrics (accuracy, macro-F1) the fusion model matches the text-only baseline on average but with markedly higher per-seed variance (accuracy standard deviation $0.052$ for fusion versus $0.021$ for text), indicating that the multimodal model provides better calibrated probability rankings rather than a uniform threshold-level gain. Audio is the weakest unimodal baseline; text is the strongest, consistent with the verbal nature of much hate content in this dataset.
 
 \begin{table}[t]
 \vskip 0.15in
@@ -89,14 +89,14 @@ Multimodal hate detection has been studied on image-text memes \cite{kiela2020ha
 \toprule
 Modalities & Acc & F1 & Prec & Rec & AUROC \\
 \midrule
-Video       & .743 & .726 & .692 & .628 & .815 \\
-Audio       & .697 & .695 & .589 & \textbf{.767} & .775 \\
-Text        & .780 & .763 & .757 & .651 & .842 \\
+Video & $.72{\pm}.03$ & $.71{\pm}.02$ & $.64{\pm}.06$ & $.68{\pm}.06$ & $.81{\pm}.01$ \\
+Audio & $.67{\pm}.02$ & $.67{\pm}.03$ & $.56{\pm}.02$ & $.71{\pm}.05$ & $.77{\pm}.03$ \\
+Text  & $.79{\pm}.02$ & $.78{\pm}.02$ & $.75{\pm}.06$ & $.73{\pm}.08$ & $.83{\pm}.02$ \\
 \midrule
-V+A+T       & \textbf{.835} & \textbf{.824} & \textbf{.821} & .744 & \textbf{.873} \\
+V+A+T & $.79{\pm}.05$ & $.78{\pm}.05$ & $.74{\pm}.08$ & $.74{\pm}.08$ & $\mathbf{.88{\pm}.01}$ \\
 \bottomrule
 \end{tabular}
-\caption{Test-set metrics on HateMM (n=109). Best per metric in bold. The trimodal fusion wins on every metric except recall.}
+\caption{Test-set metrics on HateMM ($n=109$), mean $\pm$ standard deviation over three seeds. The fusion model wins robustly on AUROC; on threshold-dependent metrics it matches the text-only baseline on average with higher per-seed variance.}
 \label{tab:ablation}
 \end{sc}
 \end{small}
@@ -128,13 +128,15 @@ Jews   & 15 & .600 & .733 & .733 & \textbf{.867} \\
 \vskip -0.1in
 \end{table}
 
-\textbf{Discussion and limitations.} Our headline finding is straightforward: a small, frozen-encoder fusion model outperforms each of its unimodal counterparts on HateMM by a clear margin, and the gain is consistent across the three target-community groups with sufficient test support. No single modality dominates across all groups: text wins on \emph{Others}, audio wins on recall, video alone is the weakest unimodal baseline. Several limitations should be noted. First, the test set ($n=109$) is small, so all reported per-community estimates carry appreciable variance; bootstrap confidence intervals would tighten the interpretation. Second, we report a single random seed; a multi-seed average would further reduce variance in the ablation table. Third, our community-label normalisation is heuristic: multi-community labels are canonicalised to a sorted comma-joined form, which conflates intersectional rows with singleton ones. Fourth, the audio encoder pools the wav2vec2 hidden states to a fixed length of 64 tokens, which over-averages long videos and pads short ones; an adaptive pooling scheme may help on the audio-only baseline.
+\textbf{Discussion and limitations.} Our headline finding is nuanced: a small, frozen-encoder fusion model robustly improves AUROC over each unimodal baseline, but on threshold-dependent metrics it matches the strongest unimodal model (text) on average with higher per-seed variance. This pattern, a robust ranking gain accompanied by a noisy threshold-level gain, is consistent with a higher-capacity model that learns better discrimination but is more sensitive to optimisation randomness in the loss-to-prediction map. A single-seed report would have overstated the threshold-level improvement; multi-seed analysis surfaces this important nuance.
+
+Several limitations remain. First, the test set ($n=109$) is small, so per-community estimates carry appreciable variance; bootstrap confidence intervals would tighten the interpretation further. Second, our community-label normalisation is heuristic: multi-community labels are canonicalised to a sorted comma-joined form, which conflates intersectional rows with singleton ones. Third, the audio encoder pools the wav2vec2 hidden states to a fixed length of 64 tokens, which over-averages long videos and pads short ones; an adaptive pooling scheme may help the audio-only baseline.
 
 %%%%%%%%% CONCLUSION %%%%%%%%%
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented a small, frozen-encoder multimodal classifier for hate video detection on HateMM. The model attains 0.835 accuracy and 0.873 AUROC on the held-out test split, with a clean and consistent improvement over each unimodal baseline. The pipeline is fully reproducible from the released dataset and our public code repository.
+We presented a small, frozen-encoder multimodal classifier for hate video detection on HateMM. Averaged over three seeds, the model attains test AUROC of $0.876 \pm 0.012$, a robust 5-point improvement over each unimodal baseline. On threshold-dependent metrics the gain washes out into seed variance, a finding a single-seed report would have missed. The pipeline is fully reproducible from the released dataset and our public code repository.
 
 % \newpage
 
