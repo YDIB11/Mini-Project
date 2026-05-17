@@ -94,7 +94,7 @@
   .col {
     display: flex;
     flex-direction: column;
-    gap: 13mm;
+    gap: 10mm;
   }
 
   /* ----- Generic content box ----- */
@@ -304,15 +304,13 @@
         <h2>Dataset</h2>
         <p>
           <strong>HateMM</strong> (Das et al., ICWSM 2023), released under
-          CC BY 4.0 on Zenodo. We use the corpus as-is, without
-          modification or redistribution.
+          CC BY 4.0 on Zenodo. We use it as-is, without modification or
+          redistribution.
         </p>
         <ul>
-          <li><strong>1083 BitChute videos</strong>: 431 hate, 652 non-hate.</li>
-          <li>Approximately 43.5 hours of content, 6.3 GB on disk.</li>
+          <li><strong>1083 BitChute videos</strong> (431 hate, 652 non-hate); ~43.5 hours, 6.3 GB.</li>
           <li>Per-video labels: binary hate flag, target community, hateful-segment timestamps.</li>
-          <li>Stratified split by label, fixed seed: 80 % train (863), 10 % val (109), 10 % test (109).</li>
-          <li>Preprocessing succeeded on 1081 / 1083 videos.</li>
+          <li>80/10/10 stratified split (863/109/109), fixed seed; preprocessing succeeded on 1081/1083 videos.</li>
         </ul>
       </section>
 
@@ -436,6 +434,14 @@
             [CLS]-readout variant suited to the dataset scale.
           </li>
         </ul>
+      </section>
+
+      <!-- Reproducibility -->
+      <section class="box">
+        <h2>Reproducibility</h2>
+        <p>
+          AdamW (lr&nbsp;1e-4, batch&nbsp;16, BCE), early stop on val macro-F1; 3 seeds {42, 1337, 2025} with the split held fixed. Single NVIDIA V100 on EPFL Noto, using the EE-559 course kernel plus <em>opencv-python-headless</em> and <em>faster-whisper</em>. Full pipeline and aggregator at <strong>github.com/YDIB11/Mini-Project</strong>.
+        </p>
       </section>
 
     </div><!-- /left column -->
@@ -575,25 +581,15 @@
         <h2>Conclusion</h2>
         <p>
           Fusing three frozen pretrained encoders through a small
-          transformer head <strong>robustly improves AUROC</strong> over
-          every unimodal baseline on HateMM (0.88 &plusmn; 0.01 vs
-          0.83 &plusmn; 0.02 for text). On threshold-dependent metrics
-          the gain washes out into seed variance, a finding single-seed
-          reporting would have missed. Per-community, text alone is
-          competitive with or better than fusion on every reported
-          group, and fusion is unstable on small subgroups.
-        </p>
-        <p>
-          <span class="label">Practical implication.</span>
-          Fusion produces better-calibrated probability rankings, but a
-          threshold-based decision policy may not see a uniform gain over
-          a strong text-only baseline.
-        </p>
-        <p>
-          <span class="label">Next steps.</span>
-          Counterfactual modality-masking for per-example attribution,
-          class-rebalanced training to lift hate recall, and joint
-          label-community-stratified splits to reduce small-group variance.
+          transformer head <strong>robustly improves AUROC</strong>
+          over every unimodal baseline on HateMM
+          (0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text). On
+          threshold-dependent metrics the gain washes out into seed
+          variance, a finding single-seed reporting would have missed.
+          Per-community, text alone is competitive with or better than
+          fusion on every reported group, so fusion delivers a
+          calibrated ranking gain rather than a uniform threshold-level
+          improvement over a strong text-only baseline.
         </p>
       </section>
 
@@ -601,29 +597,13 @@
 
   </div><!-- /cols -->
 
-  <!-- ============== REFERENCES (full width) ============== -->
-  <section class="refs">
-    <h2>References</h2>
-    <ol>
-      <li>
-        M. Das, R. Raj, P. Saha, B. Mathew, M. Gupta, and A. Mukherjee,
-        "HateMM: A Multi-Modal Dataset for Hate Video Classification,"
-        in <em>Proc. AAAI ICWSM</em>, vol. 17, 2023, pp. 1014-1023.
-      </li>
-      <li>
-        A. Radford et al., "Learning Transferable Visual Models From
-        Natural Language Supervision," in <em>Proc. ICML</em>, vol. 139,
-        2021, pp. 8748-8763.
-      </li>
-      <li>
-        A. Nagrani, S. Yang, A. Arnab, A. Jansen, C. Schmid, and C. Sun,
-        "Attention Bottlenecks for Multimodal Fusion," in <em>Proc.
-        NeurIPS</em>, vol. 34, 2021, pp. 14200-14213.
-      </li>
-    </ol>
-  </section>
-
-  <div class="footer">EE-559: Deep Learning, EPFL, Spring 2026</div>
+  <!-- ============== FOOTER ============== -->
+  <div class="footer">
+    [1] Das et al., HateMM, ICWSM 2023 &nbsp;&middot;&nbsp;
+    [2] Radford et al., CLIP, ICML 2021 &nbsp;&middot;&nbsp;
+    [3] Nagrani et al., Attention Bottlenecks for Multimodal Fusion, NeurIPS 2021
+    &nbsp;&middot;&nbsp; EE-559 Deep Learning, EPFL, Spring 2026
+  </div>
 
 </div>
 </body>
