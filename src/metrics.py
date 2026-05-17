@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 from collections import defaultdict
 
 import numpy as np
@@ -10,7 +11,7 @@ from sklearn.metrics import (
 )
 
 
-def compute_metrics(labels: np.ndarray, preds: np.ndarray, probs: np.ndarray) -> dict[str, float]:
+def compute_metrics(labels, preds, probs):
     has_both_classes = len(set(labels.tolist())) > 1
     return {
         "accuracy": accuracy_score(labels, preds),
@@ -21,16 +22,11 @@ def compute_metrics(labels: np.ndarray, preds: np.ndarray, probs: np.ndarray) ->
     }
 
 
-def per_community_breakdown(
-    labels: np.ndarray,
-    preds: np.ndarray,
-    communities: list[str | None],
-) -> dict[str, dict[str, float]]:
-    """Returns {community: {n, accuracy, macro_f1}} for each target community."""
-    groups: dict[str, list[int]] = defaultdict(list)
+def per_community_breakdown(labels, preds, communities):
+    groups = defaultdict(list)
     for i, c in enumerate(communities):
-        groups[c if c else "unknown"].append(i)
-    out: dict[str, dict[str, float]] = {}
+        groups[_normalize_community(c)].append(i)
+    out = {}
     for c, idx in groups.items():
         y_true = labels[idx]
         y_pred = preds[idx]
@@ -40,3 +36,23 @@ def per_community_breakdown(
             "macro_f1": f1_score(y_true, y_pred, average="macro", zero_division=0),
         }
     return out
+
+
+def _normalize_community(raw):
+    if raw is None or raw == "":
+        return "unknown"
+    s = str(raw).strip()
+    if not s:
+        return "unknown"
+    if s.startswith("[") and s.endswith("]"):
+        try:
+            parsed = ast.literal_eval(s)
+            if isinstance(parsed, (list, tuple)):
+                items = sorted({str(x).strip() for x in parsed if str(x).strip()})
+                return ",".join(items) if items else "unknown"
+        except (ValueError, SyntaxError):
+            pass
+    if "," in s:
+        items = sorted({x.strip() for x in s.split(",") if x.strip()})
+        return ",".join(items) if items else "unknown"
+    return s

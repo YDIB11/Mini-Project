@@ -36,7 +36,7 @@ class AudioEncoder:
         hidden_chunks: list[torch.Tensor] = []
         for i in range(0, max(len(wav), 1), self.chunk_samples):
             chunk = wav[i:i + self.chunk_samples]
-            if chunk.size == 0:
+            if chunk.size < 1000:
                 continue
             inputs = self.fe(chunk, sampling_rate=self.sample_rate, return_tensors="pt")
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
