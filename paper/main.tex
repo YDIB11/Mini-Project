@@ -12,6 +12,8 @@
 \input{source/preamble}
 \usepackage[accepted]{source/icml2021}
 \usepackage{amssymb}   % for \mathbb in the Method section
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc}
 
 %%%%%%%%% GROUP NUMBER %%%%%%%%%
 \icmltitlerunning{EE-559 Deep Learning: Group Mini-Project, Group 7}
@@ -64,11 +66,74 @@ Multimodal hate detection has been studied on image-text memes \cite{kiela2020ha
 \section{Method}
 \label{sec:method}
 
+\begin{figure*}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=8mm and 6mm,
+    enc/.style={draw, rounded corners=2pt, minimum height=8mm, minimum width=20mm,
+                fill=gray!12, draw=gray!50, align=center, font=\scriptsize},
+    train/.style={draw, rounded corners=2pt, minimum height=8mm, minimum width=20mm,
+                  fill=yellow!22, draw=yellow!50!black, align=center, font=\scriptsize},
+    io/.style={align=center, font=\scriptsize},
+    out/.style={align=center, font=\scriptsize\bfseries, color=yellow!40!black},
+    arr/.style={->, semithick, gray!70},
+    dim/.style={font=\tiny, midway, above=-1pt, color=gray!70!black},
+]
+% Inputs
+\node[io] (vin) {Video\\frames};
+\node[io, below=10mm of vin] (ain) {Audio\\track};
+\node[io, below=10mm of ain] (tin) {Transcript};
+
+% Frozen encoders
+\node[enc, right=of vin] (clip) {CLIP ViT-B/32\\(frozen)};
+\node[enc, right=of ain] (w2v)  {wav2vec2-base\\(frozen)};
+\node[enc, right=of tin] (rob)  {RoBERTa-base\\(frozen)};
+
+% Trainable per-modality projections
+\node[train, right=of clip] (vp) {Linear\\$\to d_m$};
+\node[train, right=of w2v]  (ap) {Linear\\$\to d_m$};
+\node[train, right=of rob]  (tp) {Linear\\$\to d_m$};
+
+% Fusion column
+\node[train, right=12mm of ap, minimum width=22mm] (fuse) {[CLS] $\oplus$\\concat};
+\node[train, right=of fuse, minimum width=28mm] (tx) {Transformer\\2 layers, 4 heads\\$d_m{=}256$};
+\node[train, right=of tx, minimum width=20mm] (head) {[CLS] readout\\$\to$ Linear};
+
+% Output
+\node[out, right=of head] (out) {hate /\\non-hate};
+
+% Inputs -> encoders
+\draw[arr] (vin) -- (clip);
+\draw[arr] (ain) -- (w2v);
+\draw[arr] (tin) -- (rob);
+
+% Encoders -> projections, with sequence-length labels
+\draw[arr] (clip) -- node[dim] {$32{\times}512$} (vp);
+\draw[arr] (w2v)  -- node[dim] {$64{\times}768$} (ap);
+\draw[arr] (rob)  -- node[dim] {$128{\times}768$} (tp);
+
+% Projections -> fusion (L-shaped routes for upper/lower modalities)
+\draw[arr] (vp.east) -- ++(3mm,0) |- (fuse.west);
+\draw[arr] (ap.east) -- (fuse.west);
+\draw[arr] (tp.east) -- ++(3mm,0) |- (fuse.west);
+
+% Fusion -> transformer -> readout -> output
+\draw[arr] (fuse) -- (tx);
+\draw[arr] (tx) -- (head);
+\draw[arr] (head) -- (out);
+\end{tikzpicture}%
+}
+\caption{Pipeline architecture. Frozen pretrained encoders (grey) produce per-modality feature sequences; trainable layers (gold) project them into a common $d_m{=}256$ embedding space, prepend a learnable [CLS] token, fuse them with a small transformer encoder, and emit a binary prediction from the [CLS] readout.}
+\label{fig:arch}
+\end{figure*}
+
 \textbf{Preprocessing.} For each video we extract three modality streams. We sample 32 RGB frames at 1\,fps with center cropping and resize to $224 \times 224$. The audio track is decoded to a 16\,kHz mono PCM stream with \texttt{ffmpeg}; videos lacking an audio stream are replaced with a 0.5\,s silent placeholder so downstream code receives a uniform tensor shape. The English transcript is obtained with faster-whisper \cite{radford2022whisper} running the \texttt{small} model on the extracted audio.
 
 \textbf{Frozen feature extraction.} Three pretrained encoders, all kept frozen, produce per-modality feature sequences. Video frames are passed through the CLIP ViT-B/32 vision tower \cite{radford2021clip}, yielding a sequence of 32 frame embeddings in $\mathbb{R}^{512}$. Audio is encoded with wav2vec2-base \cite{baevski2020wav2vec2}; the resulting hidden states are mean-pooled into 64 fixed-length tokens in $\mathbb{R}^{768}$ to bound memory across variable-length inputs. Transcripts are passed through RoBERTa-base \cite{liu2019roberta} with truncation at 128 tokens, producing token-level embeddings in $\mathbb{R}^{768}$ with the standard attention mask. All per-video features are cached to disk so subsequent experiments operate on cheap tensor reads.
 
-\textbf{Fusion transformer.} Per-modality features are linearly projected to a common 256-dimensional embedding space and tagged with a learned modality identifier. A trainable \texttt{[CLS]} token is prepended and the concatenated sequence is processed by a pre-norm transformer encoder \cite{vaswani2017attention} with two layers and four attention heads, GELU activations, and dropout 0.1. The \texttt{[CLS]} output is fed to a linear binary classifier. The same module supports arbitrary modality subsets by omitting the corresponding embedding sequence, which we use to obtain unimodal baselines that share the exact same architecture as the full fusion model. This makes the ablation a clean comparison of \emph{modality information}, not of architecture or capacity.
+\textbf{Fusion transformer.} As shown in Fig.~\ref{fig:arch}, per-modality features are linearly projected to a common 256-dimensional embedding space and tagged with a learned modality identifier. A trainable \texttt{[CLS]} token is prepended and the concatenated sequence is processed by a pre-norm transformer encoder \cite{vaswani2017attention} with two layers and four attention heads, GELU activations, and dropout 0.1. The \texttt{[CLS]} output is fed to a linear binary classifier. The same module supports arbitrary modality subsets by omitting the corresponding embedding sequence, which we use to obtain unimodal baselines that share the exact same architecture as the full fusion model. This makes the ablation a clean comparison of \emph{modality information}, not of architecture or capacity.
 
 %%%%%%%%% VALIDATION %%%%%%%%%
 \section{Validation}
@@ -78,7 +143,14 @@ Multimodal hate detection has been studied on image-text memes \cite{kiela2020ha
 
 \textbf{Training.} All models are optimised with AdamW \cite{loshchilov2019adamw} at a learning rate of $10^{-4}$, weight decay $10^{-2}$, and batch size 16, using binary cross-entropy loss. We train for up to 20 epochs with early stopping on validation macro-F1 (patience 5). Each modality configuration is trained under three random seeds $\{42, 1337, 2025\}$, with the data split held fixed across seeds for fair comparison; results below are reported as mean $\pm$ standard deviation across seeds. All runs use a single NVIDIA V100 GPU.
 
-\textbf{Modality ablation.} Tab.~\ref{tab:ablation} reports test-set metrics for the three unimodal models and the trimodal fusion as mean $\pm$ standard deviation over three seeds. The fusion model achieves the highest AUROC by a robust margin ($0.876 \pm 0.012$), an absolute gain of $4.9$ AUROC points over the strongest unimodal baseline (text, $0.827 \pm 0.016$); the gap exceeds twice the combined standard deviation. On threshold-dependent metrics (accuracy, macro-F1) the fusion model matches the text-only baseline on average but with markedly higher per-seed variance (accuracy standard deviation $0.052$ for fusion versus $0.021$ for text), indicating that the multimodal model provides better calibrated probability rankings rather than a uniform threshold-level gain. Audio is the weakest unimodal baseline; text is the strongest, consistent with the verbal nature of much hate content in this dataset.
+\textbf{Modality ablation.} Tab.~\ref{tab:ablation} and Fig.~\ref{fig:ablation_bars} report test-set metrics for the three unimodal models and the trimodal fusion as mean $\pm$ standard deviation over three seeds. The fusion model achieves the highest AUROC by a robust margin ($0.876 \pm 0.012$), an absolute gain of $4.9$ AUROC points over the strongest unimodal baseline (text, $0.827 \pm 0.016$); the gap exceeds twice the combined standard deviation. On threshold-dependent metrics (accuracy, macro-F1) the fusion model matches the text-only baseline on average but with markedly higher per-seed variance (accuracy standard deviation $0.052$ for fusion versus $0.021$ for text), indicating that the multimodal model provides better calibrated probability rankings rather than a uniform threshold-level gain. Audio is the weakest unimodal baseline; text is the strongest, consistent with the verbal nature of much hate content in this dataset.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/ablation_bars}
+\caption{Multi-seed test-set performance on HateMM, sorted by AUROC. Error bars show $\pm 1$ standard deviation across three seeds. AUROC (gold) shows a clear and robust separation between the trimodal fusion and each unimodal baseline. On accuracy (blue) the fusion model overlaps with the text-only baseline once seed variance is taken into account.}
+\label{fig:ablation_bars}
+\end{figure}
 
 \begin{table}[t]
 \vskip 0.15in
