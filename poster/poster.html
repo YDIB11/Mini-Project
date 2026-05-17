@@ -41,15 +41,25 @@
     padding-bottom: 8mm;
     align-items: end;
   }
-  .header h1 {
-    margin: 0;
-    font-size: 96pt;
-    line-height: 1.02;
-    font-weight: 800;
-    letter-spacing: -0.5pt;
-    color: #1a1a1a;
+  .title-wrap {
     grid-column: 1;
     grid-row: 1;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 110pt;
+    line-height: 1.0;
+    font-weight: 800;
+    letter-spacing: -1pt;
+    color: #1a1a1a;
+    font-style: italic;
+  }
+  .header .subtitle {
+    margin: 3mm 0 0 0;
+    font-size: 42pt;
+    font-weight: 500;
+    color: #c41e1a;
+    line-height: 1.1;
   }
   .header .sub {
     grid-column: 1;
@@ -259,7 +269,10 @@
 
   <!-- ============== HEADER ============== -->
   <header class="header">
-    <h1>Multimodal Hate Video Classification on HateMM</h1>
+    <div class="title-wrap">
+      <h1>Three signals, one verdict?</h1>
+      <p class="subtitle">A multi-seed look at multimodal hate video classification on HateMM</p>
+    </div>
     <div class="sub">
       <div class="authors">
         Youssef Dib, Kevin Abou Jaoude, Rami Aschkar
@@ -438,11 +451,24 @@
         </ul>
       </section>
 
-      <!-- Reproducibility -->
+      <!-- Plot twist -->
       <section class="box">
-        <h2>Reproducibility</h2>
+        <h2>Plot twist</h2>
         <p>
-          AdamW (lr&nbsp;1e-4, batch&nbsp;16, BCE), early stop on val macro-F1; 3 seeds {42, 1337, 2025} with the split held fixed. Single NVIDIA V100 on EPFL Noto, using the EE-559 course kernel plus <em>opencv-python-headless</em> and <em>faster-whisper</em>. Full pipeline and aggregator at <strong>github.com/YDIB11/Mini-Project</strong>.
+          Our <strong>first run, with one random seed</strong>, showed
+          fusion winning by 5 accuracy points. We almost wrote the paper
+          claiming &laquo;fusion wins everywhere.&raquo;
+        </p>
+        <p>
+          Re-running across three seeds {42, 1337, 2025} made the
+          accuracy gap <strong>vanish into seed variance</strong>. Only
+          the AUROC gain held up. That is why we now lead with AUROC and
+          report everything as mean &plusmn; std.
+        </p>
+        <p>
+          <span class="label">Lesson.</span>
+          A single seed can deceive. Multi-seed analysis is what
+          separates a confident headline from an honest one.
         </p>
       </section>
 
