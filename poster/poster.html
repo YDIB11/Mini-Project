@@ -159,7 +159,7 @@
   }
   table.results th,
   table.results td {
-    padding: 3.5mm 3.5mm;
+    padding: 4mm 3.5mm;
     text-align: right;
     border-bottom: 0.3mm solid #e2e2e2;
   }
@@ -185,7 +185,7 @@
   .chart img {
     width: 100%;
     height: auto;
-    max-height: 200mm;
+    max-height: 220mm;
     object-fit: contain;
     border: 0.4mm solid #d4d4d4;
     border-radius: 2mm;
@@ -610,9 +610,10 @@
         <p>
           <span class="label">Practical implication.</span>
           Fusion is the right choice for ranking-based pipelines
-          (triage, human-in-the-loop review). For a fixed-threshold
-          binary decision on this dataset, text-only is a strong and
-          cheaper alternative.
+          (triage, soft flagging, human-in-the-loop review) where
+          probability calibration matters. For a fixed-threshold
+          binary decision on this dataset, text-only remains a strong
+          and substantially cheaper alternative.
         </p>
       </section>
 
