@@ -1,0 +1,161 @@
+{
+  "Blacks": {
+    "n": 46,
+    "by_modality": {
+      "audio": {
+        "accuracy": {
+          "mean": 0.5942,
+          "std": 0.0628,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.5623,
+          "std": 0.0779,
+          "n": 3
+        }
+      },
+      "text": {
+        "accuracy": {
+          "mean": 0.7319,
+          "std": 0.0251,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7183,
+          "std": 0.03,
+          "n": 3
+        }
+      },
+      "video+audio+text": {
+        "accuracy": {
+          "mean": 0.7536,
+          "std": 0.0547,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7441,
+          "std": 0.0568,
+          "n": 3
+        }
+      },
+      "video": {
+        "accuracy": {
+          "mean": 0.6957,
+          "std": 0.0376,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.6841,
+          "std": 0.0374,
+          "n": 3
+        }
+      }
+    }
+  },
+  "Others": {
+    "n": 39,
+    "by_modality": {
+      "audio": {
+        "accuracy": {
+          "mean": 0.6837,
+          "std": 0.1067,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.4589,
+          "std": 0.0865,
+          "n": 3
+        }
+      },
+      "text": {
+        "accuracy": {
+          "mean": 0.8547,
+          "std": 0.0533,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.4606,
+          "std": 0.0157,
+          "n": 3
+        }
+      },
+      "video+audio+text": {
+        "accuracy": {
+          "mean": 0.8376,
+          "std": 0.0148,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.497,
+          "std": 0.0738,
+          "n": 3
+        }
+      },
+      "video": {
+        "accuracy": {
+          "mean": 0.7436,
+          "std": 0.0889,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.4779,
+          "std": 0.0549,
+          "n": 3
+        }
+      }
+    }
+  },
+  "Jews": {
+    "n": 15,
+    "by_modality": {
+      "audio": {
+        "accuracy": {
+          "mean": 0.7111,
+          "std": 0.0385,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7103,
+          "std": 0.0378,
+          "n": 3
+        }
+      },
+      "text": {
+        "accuracy": {
+          "mean": 0.7555,
+          "std": 0.0385,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7535,
+          "std": 0.0371,
+          "n": 3
+        }
+      },
+      "video+audio+text": {
+        "accuracy": {
+          "mean": 0.7333,
+          "std": 0.1334,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7305,
+          "std": 0.1315,
+          "n": 3
+        }
+      },
+      "video": {
+        "accuracy": {
+          "mean": 0.6667,
+          "std": 0.0667,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.6607,
+          "std": 0.0746,
+          "n": 3
+        }
+      }
+    }
+  }
+}

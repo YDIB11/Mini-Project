@@ -1,0 +1,142 @@
+{
+  "audio": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1337,
+      2025
+    ],
+    "metrics": {
+      "accuracy": {
+        "mean": 0.6697,
+        "std": 0.0242,
+        "n": 3
+      },
+      "macro_f1": {
+        "mean": 0.6658,
+        "std": 0.0255,
+        "n": 3
+      },
+      "precision": {
+        "mean": 0.564,
+        "std": 0.0223,
+        "n": 3
+      },
+      "recall": {
+        "mean": 0.7132,
+        "std": 0.0484,
+        "n": 3
+      },
+      "auroc": {
+        "mean": 0.7659,
+        "std": 0.0332,
+        "n": 3
+      }
+    }
+  },
+  "text": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1337,
+      2025
+    ],
+    "metrics": {
+      "accuracy": {
+        "mean": 0.792,
+        "std": 0.0212,
+        "n": 3
+      },
+      "macro_f1": {
+        "mean": 0.781,
+        "std": 0.0213,
+        "n": 3
+      },
+      "precision": {
+        "mean": 0.746,
+        "std": 0.0551,
+        "n": 3
+      },
+      "recall": {
+        "mean": 0.7287,
+        "std": 0.0817,
+        "n": 3
+      },
+      "auroc": {
+        "mean": 0.8271,
+        "std": 0.0158,
+        "n": 3
+      }
+    }
+  },
+  "video+audio+text": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1337,
+      2025
+    ],
+    "metrics": {
+      "accuracy": {
+        "mean": 0.792,
+        "std": 0.0522,
+        "n": 3
+      },
+      "macro_f1": {
+        "mean": 0.7821,
+        "std": 0.0546,
+        "n": 3
+      },
+      "precision": {
+        "mean": 0.7388,
+        "std": 0.0773,
+        "n": 3
+      },
+      "recall": {
+        "mean": 0.7365,
+        "std": 0.0817,
+        "n": 3
+      },
+      "auroc": {
+        "mean": 0.8759,
+        "std": 0.0119,
+        "n": 3
+      }
+    }
+  },
+  "video": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1337,
+      2025
+    ],
+    "metrics": {
+      "accuracy": {
+        "mean": 0.7217,
+        "std": 0.0295,
+        "n": 3
+      },
+      "macro_f1": {
+        "mean": 0.7113,
+        "std": 0.0229,
+        "n": 3
+      },
+      "precision": {
+        "mean": 0.6444,
+        "std": 0.0567,
+        "n": 3
+      },
+      "recall": {
+        "mean": 0.6822,
+        "std": 0.0585,
+        "n": 3
+      },
+      "auroc": {
+        "mean": 0.8081,
+        "std": 0.0139,
+        "n": 3
+      }
+    }
+  }
+}
