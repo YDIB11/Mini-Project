@@ -185,6 +185,8 @@
   .chart img {
     width: 100%;
     height: auto;
+    max-height: 170mm;
+    object-fit: contain;
     border: 0.4mm solid #d4d4d4;
     border-radius: 2mm;
   }
@@ -561,11 +563,10 @@
       <section class="box">
         <h2>Limitations</h2>
         <ul>
-          <li><strong>Small test set (n = 109).</strong> Per-community statistics for groups with n &lt; 15 are excluded as unreliable; even reported groups carry appreciable variance.</li>
-          <li><strong>Heuristic community-label normalisation.</strong> Multi-target labels are canonicalised to a sorted comma-joined form, which conflates intersectional rows with singleton ones.</li>
+          <li><strong>Small test set (n = 109).</strong> Per-community stats for groups with n &lt; 15 are excluded; reported groups still carry appreciable variance.</li>
+          <li><strong>Heuristic community-label normalisation.</strong> Multi-target labels canonicalised to a sorted comma-joined form, conflating intersectional rows with singleton ones.</li>
           <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality on a subset.</li>
-          <li><strong>Frozen backbones cap absolute performance.</strong> Intentional methodological choice that keeps the modality ablation interpretable.</li>
-          <li><strong>Fixed-length audio pooling.</strong> Wav2vec2 hidden states are mean-pooled into 64 tokens, over-averaging long videos.</li>
+          <li><strong>Architectural choices.</strong> Frozen backbones cap absolute performance, and wav2vec2 hidden states are pooled to a fixed 64 tokens (over-averaging long videos).</li>
         </ul>
       </section>
 
