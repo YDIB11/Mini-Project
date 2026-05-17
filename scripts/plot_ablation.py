@@ -35,10 +35,11 @@ DISPLAY_NAME = {
     "video+audio+text": "V+A+T",
 }
 
-# Visual style
-ACC_COLOR   = "#5B7DB1"   # muted blue
-AUROC_COLOR = "#D4AF37"   # classic gold (same accent as the progress report)
-EDGE_COLOR  = "#262626"
+# Visual style. Matches the poster palette: red primary (#c41e1a) for the
+# AUROC bar (the robust win), dark grey for the neutral accuracy bar.
+ACC_COLOR   = "#404040"   # dark grey
+AUROC_COLOR = "#c41e1a"   # EPFL/poster red
+EDGE_COLOR  = "#1a1a1a"
 GRID_COLOR  = "#999999"
 
 
