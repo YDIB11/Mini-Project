@@ -178,7 +178,7 @@
   table.results tr.fusion {
     background: #fbeaea;
   }
-  table.results tr.fusion td {
+  table.results td.winner {
     font-weight: 700;
     color: #c41e1a;
   }
@@ -384,9 +384,9 @@
               <line x1="290" y1="380" x2="430" y2="380" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
 
               <!-- Token shapes -->
-              <text x="790" y="60"  font-size="18" fill="#595959">(T_v, 512)</text>
+              <text x="790" y="60"  font-size="18" fill="#595959">(32, 512)</text>
               <text x="790" y="210" font-size="18" fill="#595959">(64, 768)</text>
-              <text x="790" y="360" font-size="18" fill="#595959">(T_t, 768)</text>
+              <text x="790" y="360" font-size="18" fill="#595959">(128, 768)</text>
 
               <!-- Fusion -->
               <rect x="930" y="120" width="380" height="220" rx="12" ry="12" fill="#ffffff" stroke="#c41e1a" stroke-width="4"/>
@@ -448,7 +448,7 @@
         <h2>Validation</h2>
 
         <table class="results">
-          <caption>Table 1. Modality ablation on the test split (n = 109).</caption>
+          <caption>Table 1. Modality ablation on the test split (n = 109), mean &plusmn; std over 3 seeds {42, 1337, 2025}.</caption>
           <thead>
             <tr>
               <th>Modality</th>
@@ -462,22 +462,38 @@
           <tbody>
             <tr class="fusion">
               <td>V + A + T</td>
-              <td>0.835</td><td>0.824</td><td>0.821</td><td>0.744</td><td>0.873</td>
+              <td>0.79 &plusmn; 0.05</td>
+              <td>0.78 &plusmn; 0.05</td>
+              <td>0.74 &plusmn; 0.08</td>
+              <td>0.74 &plusmn; 0.08</td>
+              <td class="winner">0.88 &plusmn; 0.01</td>
             </tr>
             <tr><td>Text only</td>
-              <td>0.780</td><td>0.763</td><td>0.757</td><td>0.651</td><td>0.842</td>
+              <td>0.79 &plusmn; 0.02</td>
+              <td>0.78 &plusmn; 0.02</td>
+              <td>0.75 &plusmn; 0.06</td>
+              <td>0.73 &plusmn; 0.08</td>
+              <td>0.83 &plusmn; 0.02</td>
             </tr>
             <tr><td>Video only</td>
-              <td>0.743</td><td>0.726</td><td>0.692</td><td>0.628</td><td>0.815</td>
+              <td>0.72 &plusmn; 0.03</td>
+              <td>0.71 &plusmn; 0.02</td>
+              <td>0.64 &plusmn; 0.06</td>
+              <td>0.68 &plusmn; 0.06</td>
+              <td>0.81 &plusmn; 0.01</td>
             </tr>
             <tr><td>Audio only</td>
-              <td>0.697</td><td>0.695</td><td>0.589</td><td>0.767</td><td>0.775</td>
+              <td>0.67 &plusmn; 0.02</td>
+              <td>0.67 &plusmn; 0.03</td>
+              <td>0.56 &plusmn; 0.02</td>
+              <td>0.71 &plusmn; 0.05</td>
+              <td>0.77 &plusmn; 0.03</td>
             </tr>
           </tbody>
         </table>
 
         <table class="results" style="margin-top: 4mm;">
-          <caption>Table 2. Per-target-community test accuracy (n &ge; 10).</caption>
+          <caption>Table 2. Per-target-community test accuracy (n &ge; 15), mean &plusmn; std over 3 seeds.</caption>
           <thead>
             <tr>
               <th>Community</th>
@@ -489,32 +505,55 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Blacks</td><td>46</td><td>0.804</td><td>0.717</td><td>0.630</td><td>0.717</td></tr>
-            <tr><td>Others</td><td>39</td><td>0.846</td><td>0.795</td><td>0.718</td><td><strong>0.872</strong></td></tr>
-            <tr><td>Jews</td><td>15</td><td><strong>0.867</strong></td><td>0.600</td><td>0.733</td><td>0.733</td></tr>
+            <tr>
+              <td>Blacks</td><td>46</td>
+              <td class="winner">0.75 &plusmn; 0.06</td>
+              <td>0.70 &plusmn; 0.04</td>
+              <td>0.59 &plusmn; 0.06</td>
+              <td>0.73 &plusmn; 0.03</td>
+            </tr>
+            <tr>
+              <td>Others</td><td>39</td>
+              <td>0.84 &plusmn; 0.02</td>
+              <td>0.74 &plusmn; 0.09</td>
+              <td>0.68 &plusmn; 0.11</td>
+              <td class="winner">0.86 &plusmn; 0.05</td>
+            </tr>
+            <tr>
+              <td>Jews</td><td>15</td>
+              <td>0.73 &plusmn; 0.13</td>
+              <td>0.67 &plusmn; 0.07</td>
+              <td>0.71 &plusmn; 0.04</td>
+              <td class="winner">0.76 &plusmn; 0.04</td>
+            </tr>
           </tbody>
         </table>
 
         <div class="chart" style="margin-top: 4mm;">
-          <img src="bar_chart.png" alt="Macro-F1 bar chart across the four models">
-          <p class="caption">Figure 1. Test macro-F1, four-model modality ablation.</p>
+          <img src="bar_chart.png" alt="Accuracy and AUROC bar chart across the four models, multi-seed">
+          <p class="caption">Figure 1. Test accuracy and AUROC across the four models, mean &plusmn; std over 3 seeds, sorted ascending by AUROC.</p>
         </div>
 
         <div class="key-obs">
           <h3>Key observations</h3>
           <p>
-            <strong>Fusion wins on every aggregate metric</strong> except
-            recall, where audio-only scores higher; audio behaves as a
-            high-recall, low-precision signal that fusion integrates well.
+            <strong>Robust ranking gain, noisy threshold gain.</strong>
+            Fusion wins AUROC by 5 points over the strongest unimodal
+            (text), with the gap exceeding twice the combined standard
+            deviation. On threshold-dependent metrics (accuracy, F1)
+            fusion matches text on average with markedly higher per-seed
+            variance (std 0.05 vs 0.02).
           </p>
           <p>
-            <strong>Text is the strongest unimodal baseline</strong>,
-            consistent with the verbal nature of much hate speech.
+            <strong>Text is the strongest unimodal baseline</strong> in
+            this dataset, consistent with the verbal nature of much hate
+            content.
           </p>
           <p>
-            On <em>Others</em>, text alone slightly beats fusion; on
-            <em>Jews</em> (smallest reported group), fusion shows the
-            largest gain over any single modality.
+            Per-community, all fusion-vs-text gaps lie within combined
+            seed variance. On the smallest group <em>(Jews, n = 15)</em>
+            the fusion model's seed std (0.13) <em>exceeds</em> its mean
+            advantage by an order of magnitude.
           </p>
         </div>
       </section>
@@ -523,11 +562,11 @@
       <section class="box">
         <h2>Limitations</h2>
         <ul>
-          <li><strong>Single seed.</strong> Headline numbers come from one run; multi-seed averages would tighten the headline gap.</li>
-          <li><strong>Small test set (n = 109).</strong> Per-community statistics for groups with n &lt; 10 are excluded as unreliable.</li>
+          <li><strong>Small test set (n = 109).</strong> Per-community statistics for groups with n &lt; 15 are excluded as unreliable; even reported groups carry appreciable variance.</li>
+          <li><strong>Heuristic community-label normalisation.</strong> Multi-target labels are canonicalised to a sorted comma-joined form, which conflates intersectional rows with singleton ones.</li>
           <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality on a subset.</li>
           <li><strong>Frozen backbones cap absolute performance.</strong> Intentional methodological choice that keeps the modality ablation interpretable.</li>
-          <li><strong>Class imbalance not loss-weighted.</strong> Recall on the hate class is 0.744; the model is conservative on positives.</li>
+          <li><strong>Fixed-length audio pooling.</strong> Wav2vec2 hidden states are mean-pooled into 64 tokens, over-averaging long videos.</li>
         </ul>
       </section>
 
@@ -536,20 +575,25 @@
         <h2>Conclusion</h2>
         <p>
           Fusing three frozen pretrained encoders through a small
-          transformer head outperforms every unimodal baseline on HateMM
-          hate-video classification by a clean margin: +6 points in
-          macro-F1 and +3 points in AUROC over the best unimodal. The
-          per-community audit reveals that the gain is not uniform: text
-          alone suffices for some target groups while fusion is decisive
-          for others, with direct implications for moderation pipelines
-          that today combine modality-specific classifiers via simple
-          voting.
+          transformer head <strong>robustly improves AUROC</strong> over
+          every unimodal baseline on HateMM (0.88 &plusmn; 0.01 vs
+          0.83 &plusmn; 0.02 for text). On threshold-dependent metrics
+          the gain washes out into seed variance, a finding single-seed
+          reporting would have missed. Per-community, text alone is
+          competitive with or better than fusion on every reported
+          group, and fusion is unstable on small subgroups.
+        </p>
+        <p>
+          <span class="label">Practical implication.</span>
+          Fusion produces better-calibrated probability rankings, but a
+          threshold-based decision policy may not see a uniform gain over
+          a strong text-only baseline.
         </p>
         <p>
           <span class="label">Next steps.</span>
-          Multi-seed averaging of the headline table, a counterfactual
-          modality-masking probe for per-example modality attribution,
-          and class-rebalanced training to lift hate recall.
+          Counterfactual modality-masking for per-example attribution,
+          class-rebalanced training to lift hate recall, and joint
+          label-community-stratified splits to reduce small-group variance.
         </p>
       </section>
 
