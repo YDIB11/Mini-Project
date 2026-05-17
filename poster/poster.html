@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multimodal Hate Video Classification on HateMM — EE-559 Poster</title>
+<style>
+  /* A0 portrait: 841mm x 1189mm. Rendered 1:1 so Chrome's Print to PDF
+     exports at correct physical size. */
+  @page {
+    size: 841mm 1189mm;
+    margin: 0;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #d0d0d0;
+    font-family: "Helvetica Neue", "Arial", system-ui, sans-serif;
+    color: #1a1a1a;
+  }
+  .poster {
+    width: 841mm;
+    height: 1189mm;
+    background: #ffffff;
+    padding: 22mm 26mm 16mm 26mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12mm;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ----- Header ----- */
+  .header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 14mm;
+    row-gap: 4mm;
+    border-bottom: 4mm solid #c41e1a;
+    padding-bottom: 8mm;
+    align-items: end;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 96pt;
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.5pt;
+    color: #1a1a1a;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .header .sub {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 10mm;
+    flex-wrap: wrap;
+  }
+  .authors {
+    font-size: 34pt;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .authors .group {
+    color: #c41e1a;
+    font-weight: 700;
+  }
+  .course {
+    font-size: 28pt;
+    color: #595959;
+    text-align: right;
+  }
+  .logo {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    width: 85mm;
+    height: auto;
+    display: block;
+  }
+
+  /* ----- Two-column body ----- */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16mm;
+    flex: 1 1 auto;
+    align-items: start;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 13mm;
+  }
+
+  /* ----- Generic content box ----- */
+  .box {
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+  }
+  .box h2 {
+    margin: 0 0 3mm 0;
+    padding: 4mm 7mm;
+    font-size: 42pt;
+    font-weight: 800;
+    color: #ffffff;
+    background: #c41e1a;
+    border-radius: 1.5mm;
+  }
+  .box p, .box li {
+    font-size: 28pt;
+    line-height: 1.34;
+    margin: 0;
+  }
+  .box p + p { margin-top: 4mm; }
+  .box ul {
+    margin: 0;
+    padding-left: 10mm;
+  }
+  .box li { margin-bottom: 4mm; }
+  .label {
+    font-weight: 700;
+    font-style: italic;
+    color: #c41e1a;
+  }
+
+  /* ----- Method: architecture diagram ----- */
+  .arch {
+    width: 100%;
+    background: #fbfbfb;
+    border: 0.6mm solid #d4d4d4;
+    border-radius: 2mm;
+    padding: 4mm 3mm;
+    box-sizing: border-box;
+  }
+  .arch svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ----- Validation: tables, chart, key obs (stacked, each full column width) ----- */
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 24pt;
+  }
+  table.results caption {
+    text-align: left;
+    font-weight: 700;
+    font-size: 26pt;
+    padding-bottom: 3mm;
+    color: #1a1a1a;
+  }
+  table.results th,
+  table.results td {
+    padding: 3mm 3.5mm;
+    text-align: right;
+    border-bottom: 0.3mm solid #e2e2e2;
+  }
+  table.results th:first-child,
+  table.results td:first-child {
+    text-align: left;
+    font-weight: 600;
+  }
+  table.results thead th {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    border-bottom: 0.6mm solid #1a1a1a;
+    font-weight: 700;
+    font-size: 24pt;
+  }
+  table.results tr.fusion {
+    background: #fbeaea;
+  }
+  table.results tr.fusion td {
+    font-weight: 700;
+    color: #c41e1a;
+  }
+  .chart img {
+    width: 100%;
+    height: auto;
+    border: 0.4mm solid #d4d4d4;
+    border-radius: 2mm;
+  }
+  .chart .caption {
+    font-size: 22pt;
+    color: #595959;
+    margin-top: 3mm;
+    text-align: center;
+  }
+  .key-obs {
+    background: #f5f7fa;
+    border-left: 4mm solid #c41e1a;
+    padding: 7mm 9mm;
+    border-radius: 1mm;
+  }
+  .key-obs h3 {
+    margin: 0 0 5mm 0;
+    font-size: 30pt;
+    color: #c41e1a;
+  }
+  .key-obs p {
+    font-size: 26pt;
+    line-height: 1.32;
+    margin: 0 0 4mm 0;
+  }
+  .key-obs p:last-child { margin-bottom: 0; }
+
+  /* ----- References, full width, 3 columns of compact text ----- */
+  .refs {
+    border-top: 1mm solid #c41e1a;
+    padding-top: 7mm;
+  }
+  .refs h2 {
+    margin: 0 0 5mm 0;
+    padding: 0;
+    font-size: 32pt;
+    color: #c41e1a;
+    background: transparent;
+    font-weight: 800;
+  }
+  .refs ol {
+    margin: 0;
+    padding-left: 9mm;
+    column-count: 3;
+    column-gap: 12mm;
+    column-rule: 0.3mm solid #d4d4d4;
+  }
+  .refs li {
+    font-size: 22pt;
+    line-height: 1.34;
+    margin-bottom: 4mm;
+    break-inside: avoid;
+  }
+
+  /* ----- Footer ----- */
+  .footer {
+    text-align: center;
+    font-size: 22pt;
+    color: #595959;
+    border-top: 0.3mm solid #d4d4d4;
+    padding-top: 4mm;
+  }
+
+  /* ----- Diagram label font ----- */
+  .diag-label { font-family: "Helvetica Neue", Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- ============== HEADER ============== -->
+  <header class="header">
+    <h1>Multimodal Hate Video Classification on HateMM</h1>
+    <div class="sub">
+      <div class="authors">
+        Youssef Dib, Kevin Abou Jaoude, Rami Aschkar
+        &nbsp;·&nbsp; <span class="group">Group 07</span>
+      </div>
+      <div class="course">EE-559 Deep Learning &nbsp;·&nbsp; EPFL, Spring 2026</div>
+    </div>
+
+    <!-- Inline EPFL wordmark logo (top right) -->
+    <svg class="logo" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="74" font-family="Helvetica Neue, Arial, sans-serif"
+            font-size="86" font-weight="900" fill="#FF0000" letter-spacing="-3">EPFL</text>
+    </svg>
+  </header>
+
+  <!-- ============== TWO-COLUMN BODY ============== -->
+  <div class="cols">
+
+    <!-- ---------- LEFT COLUMN ---------- -->
+    <div class="col">
+
+      <!-- Problem definition -->
+      <section class="box">
+        <h2>Problem definition</h2>
+        <p>
+          <span class="label">Problem.</span>
+          Hateful content online increasingly travels as video, where
+          meaning is carried jointly by visual context, audio delivery,
+          and the spoken message. Single-modality classifiers struggle on
+          cases where these three signals must be combined to distinguish
+          hate from satire or critical discourse.
+        </p>
+        <p>
+          <span class="label">Hypothesis.</span>
+          A small transformer trained on top of frozen pretrained
+          per-modality encoders can outperform every unimodal baseline on
+          a real corpus of hateful and non-hateful videos, with gains
+          that are not uniform across target communities.
+        </p>
+      </section>
+
+      <!-- Dataset -->
+      <section class="box">
+        <h2>Dataset</h2>
+        <p>
+          <strong>HateMM</strong> (Das et al., ICWSM 2023), released under
+          CC BY 4.0 on Zenodo. We use the corpus as-is, without
+          modification or redistribution.
+        </p>
+        <ul>
+          <li><strong>1083 BitChute videos</strong>: 431 hate, 652 non-hate.</li>
+          <li>Approximately 43.5 hours of content, 6.3 GB on disk.</li>
+          <li>Per-video labels: binary hate flag, target community, hateful-segment timestamps.</li>
+          <li>Stratified split by label, fixed seed: 80 % train (863), 10 % val (109), 10 % test (109).</li>
+          <li>Preprocessing succeeded on 1081 / 1083 videos.</li>
+        </ul>
+      </section>
+
+      <!-- Method -->
+      <section class="box">
+        <h2>Method</h2>
+        <p>
+          Pipeline in three stages.
+        </p>
+        <ol style="margin:0; padding-left:10mm; font-size:28pt; line-height:1.34;">
+          <li style="margin-bottom:4mm;">
+            <strong>Preprocess.</strong> Sample frames at 1 fps capped at 32
+            per video, center-cropped to 224 x 224; extract 16 kHz mono
+            audio via ffmpeg; transcribe speech with faster-whisper.
+          </li>
+          <li style="margin-bottom:4mm;">
+            <strong>Frozen feature extraction.</strong> CLIP ViT-B/32 per
+            frame, wav2vec2-base mean-pooled into 64 audio tokens,
+            RoBERTa-base token embeddings (length 128) on the transcript.
+          </li>
+          <li>
+            <strong>Fusion.</strong> A 2-layer transformer (d = 256, 4 heads,
+            GELU, pre-norm) ingests the concatenated per-modality token
+            sequences plus learnable modality-type embeddings and a [CLS]
+            token; the [CLS] output goes through a linear head for binary
+            classification.
+          </li>
+        </ol>
+        <p>
+          <span class="label">Why frozen encoders.</span>
+          Keeping all three encoders frozen makes the modality ablation a
+          fair comparison: only the small fusion head varies between
+          configurations. Restricting the same architecture to a single
+          modality at the input gives our unimodal baselines.
+        </p>
+
+        <div class="arch">
+          <svg viewBox="0 0 1600 460" xmlns="http://www.w3.org/2000/svg" class="diag-label">
+            <g font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1a1a1a">
+              <!-- Inputs -->
+              <rect x="30" y="30"  width="260" height="100" rx="10" ry="10" fill="#eef0f3" stroke="#9ca3af" stroke-width="2"/>
+              <text x="160" y="78"  text-anchor="middle" font-weight="700">Video frames</text>
+              <text x="160" y="108" text-anchor="middle" font-size="20" fill="#595959">1 fps, max 32, 224x224</text>
+
+              <rect x="30" y="180" width="260" height="100" rx="10" ry="10" fill="#eef0f3" stroke="#9ca3af" stroke-width="2"/>
+              <text x="160" y="228" text-anchor="middle" font-weight="700">Audio track</text>
+              <text x="160" y="258" text-anchor="middle" font-size="20" fill="#595959">16 kHz mono, ffmpeg</text>
+
+              <rect x="30" y="330" width="260" height="100" rx="10" ry="10" fill="#eef0f3" stroke="#9ca3af" stroke-width="2"/>
+              <text x="160" y="378" text-anchor="middle" font-weight="700">ASR transcript</text>
+              <text x="160" y="408" text-anchor="middle" font-size="20" fill="#595959">faster-whisper (small)</text>
+
+              <!-- Encoders -->
+              <rect x="430" y="30"  width="320" height="100" rx="10" ry="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="590" y="68"  text-anchor="middle" font-weight="700" fill="#1e3a8a">CLIP ViT-B/32</text>
+              <text x="590" y="100" text-anchor="middle" font-size="20" fill="#1e3a8a">vision encoder &#10052; frozen</text>
+
+              <rect x="430" y="180" width="320" height="100" rx="10" ry="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="590" y="218" text-anchor="middle" font-weight="700" fill="#1e3a8a">wav2vec2-base</text>
+              <text x="590" y="250" text-anchor="middle" font-size="20" fill="#1e3a8a">audio encoder &#10052; frozen</text>
+
+              <rect x="430" y="330" width="320" height="100" rx="10" ry="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="590" y="368" text-anchor="middle" font-weight="700" fill="#1e3a8a">RoBERTa-base</text>
+              <text x="590" y="400" text-anchor="middle" font-size="20" fill="#1e3a8a">text encoder &#10052; frozen</text>
+
+              <!-- Arrows: inputs -> encoders -->
+              <line x1="290" y1="80"  x2="430" y2="80"  stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="290" y1="230" x2="430" y2="230" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="290" y1="380" x2="430" y2="380" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <!-- Token shapes -->
+              <text x="790" y="60"  font-size="18" fill="#595959">(T_v, 512)</text>
+              <text x="790" y="210" font-size="18" fill="#595959">(64, 768)</text>
+              <text x="790" y="360" font-size="18" fill="#595959">(T_t, 768)</text>
+
+              <!-- Fusion -->
+              <rect x="930" y="120" width="380" height="220" rx="12" ry="12" fill="#ffffff" stroke="#c41e1a" stroke-width="4"/>
+              <text x="1120" y="170" text-anchor="middle" font-size="24" font-weight="800" fill="#c41e1a">Fusion Transformer</text>
+              <text x="1120" y="210" text-anchor="middle" font-size="20" fill="#1a1a1a">2 layers · 4 heads · d=256</text>
+              <text x="1120" y="245" text-anchor="middle" font-size="20" fill="#1a1a1a">[CLS] token + modality embeds</text>
+              <text x="1120" y="290" text-anchor="middle" font-size="18" fill="#c41e1a" font-style="italic">only trainable component</text>
+
+              <!-- Arrows: encoders -> fusion -->
+              <path d="M 750 80  C 850 80, 900 230, 930 230" fill="none" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="750" y1="230" x2="930" y2="230" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+              <path d="M 750 380 C 850 380, 900 230, 930 230" fill="none" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+              <!-- Linear head + output -->
+              <line x1="1310" y1="230" x2="1420" y2="230" stroke="#1a1a1a" stroke-width="2.5" marker-end="url(#arrow)"/>
+              <text x="1365" y="218" text-anchor="middle" font-size="18" fill="#595959">[CLS]</text>
+              <rect x="1420" y="180" width="150" height="100" rx="10" ry="10" fill="#c41e1a" stroke="#7a1110" stroke-width="2"/>
+              <text x="1495" y="218" text-anchor="middle" font-weight="700" fill="#ffffff" font-size="22">Linear</text>
+              <text x="1495" y="248" text-anchor="middle" font-size="18" fill="#ffffff">head</text>
+              <text x="1495" y="320" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1a1a">hate / non-hate</text>
+            </g>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a1a1a"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Related works -->
+      <section class="box">
+        <h2>Related works</h2>
+        <ul>
+          <li>
+            <strong>HateMM [1].</strong> Defines the task; releases the
+            dataset and target-community labels we audit against.
+          </li>
+          <li>
+            <strong>CLIP [2].</strong> Provides our frozen vision encoder;
+            we use the image branch only.
+          </li>
+          <li>
+            <strong>Multimodal fusion transformers [3].</strong> Motivate
+            the cross-modal-attention design; we adopt a lighter
+            [CLS]-readout variant suited to the dataset scale.
+          </li>
+        </ul>
+      </section>
+
+    </div><!-- /left column -->
+
+    <!-- ---------- RIGHT COLUMN ---------- -->
+    <div class="col">
+
+      <!-- Validation -->
+      <section class="box">
+        <h2>Validation</h2>
+
+        <table class="results">
+          <caption>Table 1. Modality ablation on the test split (n = 109).</caption>
+          <thead>
+            <tr>
+              <th>Modality</th>
+              <th>Acc</th>
+              <th>F1</th>
+              <th>Prec</th>
+              <th>Rec</th>
+              <th>AUROC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fusion">
+              <td>V + A + T</td>
+              <td>0.835</td><td>0.824</td><td>0.821</td><td>0.744</td><td>0.873</td>
+            </tr>
+            <tr><td>Text only</td>
+              <td>0.780</td><td>0.763</td><td>0.757</td><td>0.651</td><td>0.842</td>
+            </tr>
+            <tr><td>Video only</td>
+              <td>0.743</td><td>0.726</td><td>0.692</td><td>0.628</td><td>0.815</td>
+            </tr>
+            <tr><td>Audio only</td>
+              <td>0.697</td><td>0.695</td><td>0.589</td><td>0.767</td><td>0.775</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="results" style="margin-top: 4mm;">
+          <caption>Table 2. Per-target-community test accuracy (n &ge; 10).</caption>
+          <thead>
+            <tr>
+              <th>Community</th>
+              <th>n</th>
+              <th>Fusion</th>
+              <th>Video</th>
+              <th>Audio</th>
+              <th>Text</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Blacks</td><td>46</td><td>0.804</td><td>0.717</td><td>0.630</td><td>0.717</td></tr>
+            <tr><td>Others</td><td>39</td><td>0.846</td><td>0.795</td><td>0.718</td><td><strong>0.872</strong></td></tr>
+            <tr><td>Jews</td><td>15</td><td><strong>0.867</strong></td><td>0.600</td><td>0.733</td><td>0.733</td></tr>
+          </tbody>
+        </table>
+
+        <div class="chart" style="margin-top: 4mm;">
+          <img src="bar_chart.png" alt="Macro-F1 bar chart across the four models">
+          <p class="caption">Figure 1. Test macro-F1, four-model modality ablation.</p>
+        </div>
+
+        <div class="key-obs">
+          <h3>Key observations</h3>
+          <p>
+            <strong>Fusion wins on every aggregate metric</strong> except
+            recall, where audio-only scores higher; audio behaves as a
+            high-recall, low-precision signal that fusion integrates well.
+          </p>
+          <p>
+            <strong>Text is the strongest unimodal baseline</strong>,
+            consistent with the verbal nature of much hate speech.
+          </p>
+          <p>
+            On <em>Others</em>, text alone slightly beats fusion; on
+            <em>Jews</em> (smallest reported group), fusion shows the
+            largest gain over any single modality.
+          </p>
+        </div>
+      </section>
+
+      <!-- Limitations -->
+      <section class="box">
+        <h2>Limitations</h2>
+        <ul>
+          <li><strong>Single seed.</strong> Headline numbers come from one run; multi-seed averages would tighten the headline gap.</li>
+          <li><strong>Small test set (n = 109).</strong> Per-community statistics for groups with n &lt; 10 are excluded as unreliable.</li>
+          <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality on a subset.</li>
+          <li><strong>Frozen backbones cap absolute performance.</strong> Intentional methodological choice that keeps the modality ablation interpretable.</li>
+          <li><strong>Class imbalance not loss-weighted.</strong> Recall on the hate class is 0.744; the model is conservative on positives.</li>
+        </ul>
+      </section>
+
+      <!-- Conclusion -->
+      <section class="box">
+        <h2>Conclusion</h2>
+        <p>
+          Fusing three frozen pretrained encoders through a small
+          transformer head outperforms every unimodal baseline on HateMM
+          hate-video classification by a clean margin: +6 points in
+          macro-F1 and +3 points in AUROC over the best unimodal. The
+          per-community audit reveals that the gain is not uniform: text
+          alone suffices for some target groups while fusion is decisive
+          for others, with direct implications for moderation pipelines
+          that today combine modality-specific classifiers via simple
+          voting.
+        </p>
+        <p>
+          <span class="label">Next steps.</span>
+          Multi-seed averaging of the headline table, a counterfactual
+          modality-masking probe for per-example modality attribution,
+          and class-rebalanced training to lift hate recall.
+        </p>
+      </section>
+
+    </div><!-- /right column -->
+
+  </div><!-- /cols -->
+
+  <!-- ============== REFERENCES (full width) ============== -->
+  <section class="refs">
+    <h2>References</h2>
+    <ol>
+      <li>
+        M. Das, R. Raj, P. Saha, B. Mathew, M. Gupta, and A. Mukherjee,
+        "HateMM: A Multi-Modal Dataset for Hate Video Classification,"
+        in <em>Proc. AAAI ICWSM</em>, vol. 17, 2023, pp. 1014-1023.
+      </li>
+      <li>
+        A. Radford et al., "Learning Transferable Visual Models From
+        Natural Language Supervision," in <em>Proc. ICML</em>, vol. 139,
+        2021, pp. 8748-8763.
+      </li>
+      <li>
+        A. Nagrani, S. Yang, A. Arnab, A. Jansen, C. Schmid, and C. Sun,
+        "Attention Bottlenecks for Multimodal Fusion," in <em>Proc.
+        NeurIPS</em>, vol. 34, 2021, pp. 14200-14213.
+      </li>
+    </ol>
+  </section>
+
+  <div class="footer">EE-559: Deep Learning, EPFL, Spring 2026</div>
+
+</div>
+</body>
+</html>
