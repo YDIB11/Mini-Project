@@ -47,16 +47,16 @@
   }
   .header h1 {
     margin: 0;
-    font-size: 110pt;
+    font-size: 88pt;
     line-height: 1.0;
     font-weight: 800;
-    letter-spacing: -1pt;
+    letter-spacing: -0.5pt;
     color: #1a1a1a;
     font-style: italic;
   }
   .header .subtitle {
-    margin: 3mm 0 0 0;
-    font-size: 42pt;
+    margin: 2mm 0 0 0;
+    font-size: 34pt;
     font-weight: 500;
     color: #c41e1a;
     line-height: 1.1;
@@ -456,14 +456,11 @@
         <h2>Plot twist</h2>
         <p>
           Our <strong>first run, with one random seed</strong>, showed
-          fusion winning by 5 accuracy points. We almost wrote the paper
-          claiming &laquo;fusion wins everywhere.&raquo;
-        </p>
-        <p>
-          Re-running across three seeds {42, 1337, 2025} made the
-          accuracy gap <strong>vanish into seed variance</strong>. Only
-          the AUROC gain held up. That is why we now lead with AUROC and
-          report everything as mean &plusmn; std.
+          fusion winning by 5 accuracy points and we almost wrote a
+          paper claiming &laquo;fusion wins everywhere.&raquo; Re-running
+          across three seeds {42, 1337, 2025} made that gap
+          <strong>vanish into seed variance</strong>; only the AUROC
+          gain held up.
         </p>
         <p>
           <span class="label">Lesson.</span>
