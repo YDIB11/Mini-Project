@@ -214,13 +214,13 @@
   }
   .key-obs h3 {
     margin: 0 0 3mm 0;
-    font-size: 28pt;
+    font-size: 32pt;
     color: #c41e1a;
   }
   .key-obs p {
-    font-size: 24pt;
-    line-height: 1.30;
-    margin: 0 0 3mm 0;
+    font-size: 28pt;
+    line-height: 1.32;
+    margin: 0 0 4mm 0;
   }
   .key-obs p:last-child { margin-bottom: 0; }
 
@@ -338,17 +338,15 @@
         <h2>Problem definition</h2>
         <p>
           <span class="label">Problem.</span>
-          Hateful content online increasingly travels as video, where
-          meaning is carried jointly by visual context, audio delivery,
-          and the spoken message. Single-modality classifiers struggle on
-          cases where these three signals must be combined to distinguish
-          hate from satire or critical discourse.
+          Hate in video lives jointly in visuals, audio delivery, and
+          speech. Unimodal classifiers miss cases where the three signals
+          must combine to separate hate from satire or critical discourse.
         </p>
         <p>
           <span class="label">Hypothesis.</span>
-          A small fusion transformer trained on top of three frozen
-          encoders (vision, audio, text) can outperform every single-modality
-          baseline, but the gains are not uniform across metrics or communities.
+          A small fusion transformer on frozen vision/audio/text encoders
+          can beat every unimodal baseline, but the gain is not uniform
+          across metrics or communities.
         </p>
       </section>
 
@@ -386,9 +384,8 @@
         </ol>
         <p>
           <span class="label">Why frozen encoders.</span>
-          Keeping all three encoders frozen makes the ablation fair:
-          only the fusion head changes across configurations. Running the
-          same head with one modality at a time gives each unimodal baseline.
+          Frozen encoders make the ablation fair: only the fusion head
+          varies. Restricting it to one modality yields each unimodal baseline.
         </p>
 
         <div class="arch">
@@ -475,11 +472,10 @@
       <section class="box">
         <h2>The Seed Trap</h2>
         <div class="seed-trap">
-          <p style="font-size:24pt; margin:0 0 3mm; line-height:1.30;">
-            Our <strong>first run (seed 42 only)</strong> showed fusion beating
-            text by <strong>+5.5 accuracy points</strong>, a headline result.
-            Re-running across three seeds {42, 1337, 2025} made the gap
-            <strong>vanish completely</strong>.
+          <p style="font-size:24pt; margin:0 0 2mm; line-height:1.28;">
+            <strong>Seed 42 alone</strong> showed fusion beating text by
+            <strong>+5.5 accuracy points</strong>. Across three seeds
+            {42, 1337, 2025} the gap <strong>vanished completely</strong>.
           </p>
           <table>
             <thead>
@@ -504,8 +500,7 @@
             </tbody>
           </table>
           <div class="lesson">
-            Only AUROC survived multi-seed scrutiny (0.876 vs 0.827).
-            Single-seed reporting would have published a false claim.
+            Only AUROC survived (0.876 vs 0.827); a single seed would have shipped a false claim.
           </div>
         </div>
       </section>
@@ -639,51 +634,40 @@
             </tr>
           </tbody>
         </table>
-        <p style="font-size:22pt; color:#595959; margin:2mm 0 0; line-height:1.28;">
-          &#9888; <strong>Others (n = 39)</strong> is predominantly non-hate in our test split:
-          high accuracy reflects majority-class prediction, not genuine discrimination.
-          Text wins on <em>Others</em> and <em>Jews</em>; fusion leads only on <em>Blacks</em>.
-          No single model is best across all communities.
-        </p>
+        <ul style="font-size:26pt; color:#1a1a1a; margin:3mm 0 0; padding-left:9mm; line-height:1.32;">
+          <li style="margin-bottom:3mm;">&#9888; <strong>Others (n = 39)</strong> is predominantly non-hate in our test split; high accuracy reflects majority-class prediction, not genuine discrimination.</li>
+          <li style="margin-bottom:3mm;">Text wins on <em>Others</em> and <em>Jews</em>; fusion leads only on <em>Blacks</em>.</li>
+          <li>No single model is best across all communities.</li>
+        </ul>
       </section>
 
       <!-- Limitations -->
       <section class="box">
         <h2>Limitations</h2>
         <ul>
-          <li><strong>Small test set (n = 109).</strong> Per-community stats for groups with n &lt; 15 are excluded; reported groups still carry appreciable variance.</li>
-          <li><strong>Platform specificity.</strong> Models trained on BitChute may not generalise to lower-toxicity platforms where the visual and linguistic style of hateful content differs substantially.</li>
-          <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality on a subset.</li>
-          <li><strong>Frozen backbones cap performance.</strong> Audio is compressed to 64 fixed slots by wav2vec2 mean-pooling, losing detail for long videos. Fine-tuning even one encoder would improve absolute numbers but break the controlled ablation.</li>
+          <li><strong>Small test set (n = 109).</strong> Reported per-community stats (n &ge; 15) still carry appreciable variance.</li>
+          <li><strong>Platform specificity.</strong> BitChute-trained models may not transfer to lower-toxicity platforms with different style.</li>
+          <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality.</li>
+          <li><strong>Frozen backbones cap performance.</strong> Audio mean-pools to 64 fixed slots, losing detail on long videos. Unfreezing would lift numbers but break the controlled ablation.</li>
         </ul>
       </section>
 
       <!-- Conclusion -->
       <section class="box">
         <h2>Conclusion</h2>
-        <p>
-          Fusing three frozen encoders through a small transformer head
-          <strong>robustly improves AUROC</strong> over every unimodal
-          baseline (0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text alone).
-          On accuracy and F1 the gain disappears once you run three seeds,
-          something single-seed reporting would have missed entirely.
-          Fusion improves how well the model <em>ranks</em> videos by risk;
-          it does not improve how many it classifies correctly.
+        <ul>
+          <li><strong>AUROC improves robustly.</strong> 0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text alone.</li>
+          <li><strong>Accuracy and F1 do not.</strong> Across three seeds the gain disappears into seed variance.</li>
+          <li><strong>Interpretation.</strong> Fusion <em>ranks</em> videos better; it does not classify more correctly.</li>
+        </ul>
+        <p style="margin-top: 4mm;">
+          <span class="label">Practical implication.</span> Three deployment options:
         </p>
-        <p>
-          <span class="label">Practical implication.</span>
-          Three deployment options on this dataset, choose by your
-          cost/quality trade-off:
-          <strong>(i) V+A+T (AUROC 0.88 &plusmn; 0.01)</strong> when
-          ranking quality matters most;
-          <strong>(ii) V+T (AUROC 0.86 &plusmn; 0.01)</strong> as a
-          cost-aware sweet spot, within 0.02 AUROC of full
-          fusion with no audio pipeline at all, capturing ~60% of the
-          AUROC lift over text-only;
-          <strong>(iii) Text-only (acc 0.79 &plusmn; 0.02)</strong>
-          for fixed-threshold binary decisions, the cheapest
-          pipeline that still ties V+A+T on accuracy.
-        </p>
+        <ul>
+          <li><strong>V + A + T (AUROC 0.88 &plusmn; 0.01):</strong> when ranking quality matters most.</li>
+          <li><strong>V + T (AUROC 0.86 &plusmn; 0.01):</strong> cost-aware sweet spot, within 0.02 AUROC of fusion without an audio pipeline.</li>
+          <li><strong>Text-only (acc 0.79 &plusmn; 0.02):</strong> cheapest fixed-threshold option, ties V+A+T on accuracy.</li>
+        </ul>
       </section>
 
     </div><!-- /right column -->
