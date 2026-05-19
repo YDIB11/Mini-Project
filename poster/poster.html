@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Multimodal Hate Video Classification on HateMM — EE-559 Poster</title>
+<title>Multimodal Hate Video Classification on HateMM: EE-559 Poster</title>
 <style>
   /* A0 portrait: 841mm x 1189mm. Rendered 1:1 so Chrome's Print to PDF
      exports at correct physical size. */
@@ -195,7 +195,7 @@
   .chart img {
     width: 100%;
     height: auto;
-    max-height: 130mm;
+    max-height: 155mm;
     object-fit: contain;
     border: 0.4mm solid #d4d4d4;
     border-radius: 2mm;
@@ -348,7 +348,7 @@
           <span class="label">Hypothesis.</span>
           A small fusion transformer trained on top of three frozen
           encoders (vision, audio, text) can outperform every single-modality
-          baseline — but the gains are not uniform across metrics or communities.
+          baseline, but the gains are not uniform across metrics or communities.
         </p>
       </section>
 
@@ -356,7 +356,7 @@
       <section class="box">
         <h2>Dataset</h2>
         <ul>
-          <li><strong>HateMM [1] — 1,083 BitChute videos</strong> (431 hate, 652 non-hate); ~43.5 hours, 6.3 GB. CC BY 4.0.</li>
+          <li><strong>HateMM [1]: 1,083 BitChute videos</strong> (431 hate, 652 non-hate); ~43.5 hours, 6.3 GB. CC BY 4.0.</li>
           <li>A video is labeled <em>hate</em> when it attacks or demeans someone for who they are: religion, race, ethnicity, gender, sexual orientation, or disability. Each hate video also tags the targeted community.</li>
           <li>80/10/10 stratified split by binary label (863/109/109), fixed seed; preprocessing succeeded on 1081/1083 videos.</li>
           <li><strong>Scope:</strong> BitChute is a low-moderation platform, so our results characterise hate detection on that source distribution; transfer to YouTube or TikTok would require recalibration.</li>
@@ -467,7 +467,7 @@
           <li><strong>HateMM</strong> [1]. Defines the task and releases the dataset and target-community labels we audit against; their best multimodal baseline reaches ~0.80 macro-F1.</li>
           <li><strong>Hateful Memes</strong> [2]. Foundational multimodal hate benchmark (image + text); MOMENTA [3] adds context-aware fusion on the same line of work.</li>
           <li><strong>Attention Bottlenecks</strong> (Nagrani et al.) [4]. Show that cross-modal attention can match heavy late-fusion pipelines at lower cost; we use a lighter variant suited to our dataset size.</li>
-          <li><strong>Large pretrained encoders [5, 6, 7]</strong> transfer well to downstream tasks with only a small head trained on top — the frozen-encoder paradigm we rely on here.</li>
+          <li><strong>Large pretrained encoders [5, 6, 7]</strong> transfer well to downstream tasks with only a small head trained on top; the frozen-encoder paradigm we rely on here.</li>
         </ul>
       </section>
 
@@ -477,7 +477,7 @@
         <div class="seed-trap">
           <p style="font-size:24pt; margin:0 0 3mm; line-height:1.30;">
             Our <strong>first run (seed 42 only)</strong> showed fusion beating
-            text by <strong>+5.5 accuracy points</strong> — a headline result.
+            text by <strong>+5.5 accuracy points</strong>, a headline result.
             Re-running across three seeds {42, 1337, 2025} made the gap
             <strong>vanish completely</strong>.
           </p>
@@ -499,7 +499,7 @@
               <tr>
                 <td><strong>Gap</strong></td>
                 <td class="gone"><strong>+5.5 pp</strong></td>
-                <td class="gone"><strong>0.0 pp &mdash; dead tie</strong></td>
+                <td class="gone"><strong>0.0 pp, dead tie</strong></td>
               </tr>
             </tbody>
           </table>
@@ -640,7 +640,7 @@
           </tbody>
         </table>
         <p style="font-size:22pt; color:#595959; margin:2mm 0 0; line-height:1.28;">
-          &#9888; <strong>Others (n = 39)</strong> is predominantly non-hate in our test split —
+          &#9888; <strong>Others (n = 39)</strong> is predominantly non-hate in our test split:
           high accuracy reflects majority-class prediction, not genuine discrimination.
           Text wins on <em>Others</em> and <em>Jews</em>; fusion leads only on <em>Blacks</em>.
           No single model is best across all communities.
@@ -665,7 +665,7 @@
           Fusing three frozen encoders through a small transformer head
           <strong>robustly improves AUROC</strong> over every unimodal
           baseline (0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text alone).
-          On accuracy and F1 the gain disappears once you run three seeds —
+          On accuracy and F1 the gain disappears once you run three seeds,
           something single-seed reporting would have missed entirely.
           Fusion improves how well the model <em>ranks</em> videos by risk;
           it does not improve how many it classifies correctly.
@@ -677,12 +677,12 @@
           <strong>(i) V+A+T (AUROC 0.88 &plusmn; 0.01)</strong> when
           ranking quality matters most;
           <strong>(ii) V+T (AUROC 0.86 &plusmn; 0.01)</strong> as a
-          cost-aware sweet spot &mdash; within 0.02 AUROC of full
+          cost-aware sweet spot, within 0.02 AUROC of full
           fusion with no audio pipeline at all, capturing ~60% of the
           AUROC lift over text-only;
           <strong>(iii) Text-only (acc 0.79 &plusmn; 0.02)</strong>
-          for fixed-threshold binary decisions &mdash; cheapest
-          pipeline and ties V+A+T on accuracy.
+          for fixed-threshold binary decisions, the cheapest
+          pipeline that still ties V+A+T on accuracy.
         </p>
       </section>
 

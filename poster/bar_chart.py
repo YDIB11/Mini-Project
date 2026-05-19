@@ -91,19 +91,28 @@ def main() -> None:
     ax.grid(axis="y", linestyle=":", alpha=0.5)
 
     ax.set_title(
-        "Modality ablation — HateMM test split (n = 109)\n"
+        "Modality ablation on HateMM test split (n = 109)\n"
         "mean ± std over 3 seeds {42, 1337, 2025}",
         fontsize=12,
     )
 
-    # Legend
+    # Legend: placed outside the plot on the right, vertically centered.
     from matplotlib.patches import Patch
     legend_handles = [
         Patch(facecolor=COLORS["uni"],  edgecolor=EDGE_COLORS["uni"],  label="Unimodal"),
         Patch(facecolor=COLORS["bi"],   edgecolor=EDGE_COLORS["bi"],   label="Bimodal"),
-        Patch(facecolor=COLORS["tri"],  edgecolor=EDGE_COLORS["tri"],  label="Fusion (V+A+T)"),
+        Patch(facecolor=COLORS["tri"],  edgecolor=EDGE_COLORS["tri"],  label="Fusion\n(V+A+T)"),
     ]
-    ax.legend(handles=legend_handles, fontsize=10, loc="lower right")
+    ax.legend(
+        handles=legend_handles,
+        fontsize=11,
+        loc="center left",
+        bbox_to_anchor=(1.01, 0.5),
+        frameon=False,
+        handlelength=1.6,
+        handletextpad=0.6,
+        borderaxespad=0.0,
+    )
 
     fig.tight_layout()
     fig.savefig(OUT, dpi=300, bbox_inches="tight")
