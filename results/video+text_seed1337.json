@@ -1,0 +1,206 @@
+{
+  "modalities": [
+    "video",
+    "text"
+  ],
+  "split": "test",
+  "n": 109,
+  "overall": {
+    "accuracy": 0.8073,
+    "macro_f1": 0.7915,
+    "precision": 0.8056,
+    "recall": 0.6744,
+    "auroc": 0.8576
+  },
+  "overall_ci": {
+    "accuracy": [
+      0.7248,
+      0.8807
+    ],
+    "macro_f1": [
+      0.7067,
+      0.8679
+    ],
+    "precision": [
+      0.6737,
+      0.925
+    ],
+    "recall": [
+      0.5306,
+      0.814
+    ],
+    "auroc": [
+      0.7797,
+      0.9243
+    ]
+  },
+  "per_community": {
+    "Blacks": {
+      "n": 46.0,
+      "accuracy": 0.7391,
+      "macro_f1": 0.7346
+    },
+    "unknown": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Others": {
+      "n": 39.0,
+      "accuracy": 0.8462,
+      "macro_f1": 0.4583
+    },
+    "Jews": {
+      "n": 15.0,
+      "accuracy": 0.8,
+      "macro_f1": 0.7847
+    },
+    "Blacks,LGBTQ": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Muslims": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Muslims,Sexits": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Whites": {
+      "n": 2.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "LGBTQ": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Blacks,Jews": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "Jews,Others": {
+      "n": 1.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    }
+  },
+  "per_community_ci": {
+    "Blacks": {
+      "accuracy": [
+        0.6087,
+        0.8478
+      ],
+      "macro_f1": [
+        0.5868,
+        0.8472
+      ]
+    },
+    "unknown": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Others": {
+      "accuracy": [
+        0.7429,
+        0.9487
+      ],
+      "macro_f1": [
+        0.4263,
+        0.4868
+      ]
+    },
+    "Jews": {
+      "accuracy": [
+        0.6,
+        1.0
+      ],
+      "macro_f1": [
+        0.5249,
+        1.0
+      ]
+    },
+    "Blacks,LGBTQ": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Muslims": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Muslims,Sexits": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Whites": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "LGBTQ": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Blacks,Jews": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    },
+    "Jews,Others": {
+      "accuracy": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": [
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

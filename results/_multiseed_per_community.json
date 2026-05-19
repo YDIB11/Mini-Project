@@ -2,6 +2,18 @@
   "Blacks": {
     "n": 46,
     "by_modality": {
+      "audio+text": {
+        "accuracy": {
+          "mean": 0.6957,
+          "std": 0.0218,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.6812,
+          "std": 0.0166,
+          "n": 3
+        }
+      },
       "audio": {
         "accuracy": {
           "mean": 0.5942,
@@ -38,6 +50,30 @@
           "n": 3
         }
       },
+      "video+audio": {
+        "accuracy": {
+          "mean": 0.7029,
+          "std": 0.0125,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.6915,
+          "std": 0.0187,
+          "n": 3
+        }
+      },
+      "video+text": {
+        "accuracy": {
+          "mean": 0.7536,
+          "std": 0.0251,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7458,
+          "std": 0.0226,
+          "n": 3
+        }
+      },
       "video": {
         "accuracy": {
           "mean": 0.6957,
@@ -55,6 +91,18 @@
   "Others": {
     "n": 39,
     "by_modality": {
+      "audio+text": {
+        "accuracy": {
+          "mean": 0.8291,
+          "std": 0.0392,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.4859,
+          "std": 0.0485,
+          "n": 3
+        }
+      },
       "audio": {
         "accuracy": {
           "mean": 0.6837,
@@ -91,6 +139,30 @@
           "n": 3
         }
       },
+      "video+audio": {
+        "accuracy": {
+          "mean": 0.7949,
+          "std": 0.0257,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.5268,
+          "std": 0.0777,
+          "n": 3
+        }
+      },
+      "video+text": {
+        "accuracy": {
+          "mean": 0.8291,
+          "std": 0.0534,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.5002,
+          "std": 0.0937,
+          "n": 3
+        }
+      },
       "video": {
         "accuracy": {
           "mean": 0.7436,
@@ -108,6 +180,18 @@
   "Jews": {
     "n": 15,
     "by_modality": {
+      "audio+text": {
+        "accuracy": {
+          "mean": 0.7333,
+          "std": 0.1155,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7315,
+          "std": 0.1155,
+          "n": 3
+        }
+      },
       "audio": {
         "accuracy": {
           "mean": 0.7111,
@@ -141,6 +225,30 @@
         "macro_f1": {
           "mean": 0.7305,
           "std": 0.1315,
+          "n": 3
+        }
+      },
+      "video+audio": {
+        "accuracy": {
+          "mean": 0.7778,
+          "std": 0.0385,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.7672,
+          "std": 0.0304,
+          "n": 3
+        }
+      },
+      "video+text": {
+        "accuracy": {
+          "mean": 0.6667,
+          "std": 0.1334,
+          "n": 3
+        },
+        "macro_f1": {
+          "mean": 0.6595,
+          "std": 0.1257,
           "n": 3
         }
       },
