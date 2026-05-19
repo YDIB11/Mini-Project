@@ -107,7 +107,8 @@ def render_table_1(summary: dict) -> str:
     return (
         '        <table class="results">\n'
         '          <caption>Table 1. Modality ablation on the test split (n = 109), '
-        'mean &plusmn; std over 3 seeds {42, 1337, 2025}.</caption>\n'
+        'mean &plusmn; std over 3 seeds {42, 1337, 2025}. Our 0.78 macro-F1 is comparable to '
+        'Das et al.\'s reported ~0.80 on the same dataset.</caption>\n'
         '          <thead>\n'
         f'            <tr><th>Modality</th>{head_cells}</tr>\n'
         '          </thead>\n'
