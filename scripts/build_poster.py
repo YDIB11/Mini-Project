@@ -33,11 +33,22 @@ COMMUNITY_PATH = Path("results/_multiseed_per_community.json")
 
 DISPLAY = {
     "video+audio+text": "V + A + T",
+    "video+audio":      "V + A",
+    "video+text":       "V + T",
+    "audio+text":       "A + T",
     "text":             "Text only",
     "video":            "Video only",
     "audio":            "Audio only",
 }
-T1_ORDER = ["video+audio+text", "text", "video", "audio"]   # rows top to bottom
+T1_ORDER = [
+    "video+audio+text",  # full fusion
+    "video+audio",       # pairwise
+    "video+text",
+    "audio+text",
+    "text",              # unimodal
+    "video",
+    "audio",
+]
 
 T2_COMMUNITIES   = ["Blacks", "Others", "Jews"]             # rows in this order if present
 T2_MODALITIES    = ["video+audio+text", "video", "audio", "text"]  # column order

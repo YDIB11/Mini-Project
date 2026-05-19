@@ -15,6 +15,9 @@ CONFIG=${CONFIG:-configs/default.yaml}
 SEEDS=${SEEDS:-"42 1337 2025"}
 MODALITIES=(
   "video audio text"
+  "video audio"
+  "video text"
+  "audio text"
   "video"
   "audio"
   "text"
