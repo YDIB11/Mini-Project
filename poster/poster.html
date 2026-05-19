@@ -104,14 +104,14 @@
   .col {
     display: flex;
     flex-direction: column;
-    gap: 10mm;
+    gap: 7mm;
   }
 
   /* ----- Generic content box ----- */
   .box {
     display: flex;
     flex-direction: column;
-    gap: 5mm;
+    gap: 4mm;
   }
   .box h2 {
     margin: 0 0 3mm 0;
@@ -127,12 +127,12 @@
     line-height: 1.34;
     margin: 0;
   }
-  .box p + p { margin-top: 4mm; }
+  .box p + p { margin-top: 3mm; }
   .box ul {
     margin: 0;
     padding-left: 10mm;
   }
-  .box li { margin-bottom: 4mm; }
+  .box li { margin-bottom: 3mm; }
   .label {
     font-weight: 700;
     font-style: italic;
@@ -169,7 +169,7 @@
   }
   table.results th,
   table.results td {
-    padding: 4mm 3.5mm;
+    padding: 2.5mm 3mm;
     text-align: right;
     border-bottom: 0.3mm solid #e2e2e2;
   }
@@ -195,7 +195,7 @@
   .chart img {
     width: 100%;
     height: auto;
-    max-height: 220mm;
+    max-height: 130mm;
     object-fit: contain;
     border: 0.4mm solid #d4d4d4;
     border-radius: 2mm;
@@ -209,18 +209,18 @@
   .key-obs {
     background: #f5f7fa;
     border-left: 4mm solid #c41e1a;
-    padding: 7mm 9mm;
+    padding: 5mm 7mm;
     border-radius: 1mm;
   }
   .key-obs h3 {
-    margin: 0 0 5mm 0;
-    font-size: 30pt;
+    margin: 0 0 3mm 0;
+    font-size: 28pt;
     color: #c41e1a;
   }
   .key-obs p {
-    font-size: 26pt;
-    line-height: 1.32;
-    margin: 0 0 4mm 0;
+    font-size: 24pt;
+    line-height: 1.30;
+    margin: 0 0 3mm 0;
   }
   .key-obs p:last-child { margin-bottom: 0; }
 
@@ -262,6 +262,45 @@
 
   /* ----- Diagram label font ----- */
   .diag-label { font-family: "Helvetica Neue", Arial, sans-serif; }
+
+  /* ----- Seed Trap ----- */
+  .seed-trap {
+    background: #fff8f8;
+    border: 0.6mm solid #c41e1a;
+    border-radius: 2mm;
+    padding: 5mm 6mm;
+  }
+  .seed-trap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 22pt;
+    margin-top: 3mm;
+  }
+  .seed-trap th {
+    padding: 2.5mm 3.5mm;
+    background: #c41e1a;
+    color: #fff;
+    font-size: 21pt;
+    text-align: center;
+  }
+  .seed-trap th:first-child { text-align: left; }
+  .seed-trap td {
+    padding: 2.5mm 3.5mm;
+    border-bottom: 0.3mm solid #e8e8e8;
+    text-align: center;
+    font-size: 21pt;
+  }
+  .seed-trap td:first-child { text-align: left; font-weight: 600; }
+  .seed-trap .gone { color: #c41e1a; font-weight: 900; }
+  .seed-trap .lesson {
+    margin-top: 4mm;
+    font-size: 23pt;
+    line-height: 1.30;
+    background: #c41e1a;
+    color: #fff;
+    padding: 3.5mm 5mm;
+    border-radius: 1mm;
+  }
 </style>
 </head>
 <body>
@@ -307,23 +346,17 @@
         </p>
         <p>
           <span class="label">Hypothesis.</span>
-          A small transformer trained on top of frozen pretrained
-          per-modality encoders can outperform every unimodal baseline on
-          a real corpus of hateful and non-hateful videos, with gains
-          that are not uniform across target communities.
+          A small fusion transformer trained on top of three frozen
+          encoders (vision, audio, text) can outperform every single-modality
+          baseline — but the gains are not uniform across metrics or communities.
         </p>
       </section>
 
       <!-- Dataset -->
       <section class="box">
         <h2>Dataset</h2>
-        <p>
-          <strong>HateMM</strong> (Das et al., ICWSM 2023), released under
-          CC BY 4.0 on Zenodo. We use it as-is, without modification or
-          redistribution.
-        </p>
         <ul>
-          <li><strong>1083 BitChute videos</strong> (431 hate, 652 non-hate); ~43.5 hours, 6.3 GB.</li>
+          <li><strong>HateMM [1] — 1,083 BitChute videos</strong> (431 hate, 652 non-hate); ~43.5 hours, 6.3 GB. CC BY 4.0.</li>
           <li>A video is labeled <em>hate</em> when it attacks or demeans someone for who they are: religion, race, ethnicity, gender, sexual orientation, or disability. Each hate video also tags the targeted community.</li>
           <li>80/10/10 stratified split by binary label (863/109/109), fixed seed; preprocessing succeeded on 1081/1083 videos.</li>
           <li><strong>Scope:</strong> BitChute is a low-moderation platform, so our results characterise hate detection on that source distribution; transfer to YouTube or TikTok would require recalibration.</li>
@@ -333,9 +366,6 @@
       <!-- Method -->
       <section class="box">
         <h2>Method</h2>
-        <p>
-          Pipeline in three stages.
-        </p>
         <ol style="margin:0; padding-left:10mm; font-size:28pt; line-height:1.34;">
           <li style="margin-bottom:4mm;">
             <strong>Preprocess.</strong> Sample frames at 1 fps capped at 32
@@ -348,19 +378,17 @@
             RoBERTa-base token embeddings (length 128) on the transcript.
           </li>
           <li>
-            <strong>Fusion.</strong> A 2-layer transformer (d = 256, 4 heads,
-            GELU, pre-norm) ingests the concatenated per-modality token
-            sequences plus learnable modality-type embeddings and a [CLS]
-            token; the [CLS] output goes through a linear head for binary
-            classification.
+            <strong>Fusion.</strong> All token sequences are concatenated,
+            prepended with a [CLS] token and per-modality type embeddings,
+            then fed into a 2-layer pre-norm transformer (d = 256, 4 heads, GELU).
+            The [CLS] output goes to a binary linear classifier.
           </li>
         </ol>
         <p>
           <span class="label">Why frozen encoders.</span>
-          Keeping all three encoders frozen makes the modality ablation a
-          fair comparison: only the small fusion head varies between
-          configurations. Restricting the same architecture to a single
-          modality at the input gives our unimodal baselines.
+          Keeping all three encoders frozen makes the ablation fair:
+          only the fusion head changes across configurations. Running the
+          same head with one modality at a time gives each unimodal baseline.
         </p>
 
         <div class="arch">
@@ -438,41 +466,48 @@
         <ul>
           <li><strong>HateMM</strong> [1]. Defines the task and releases the dataset and target-community labels we audit against; their best multimodal baseline reaches ~0.80 macro-F1.</li>
           <li><strong>Hateful Memes</strong> [2]. Foundational multimodal hate benchmark (image + text); MOMENTA [3] adds context-aware fusion on the same line of work.</li>
-          <li><strong>Attention Bottlenecks</strong> (Nagrani et al.) [4]. Motivate cross-modal attention; we adopt a lighter [CLS]-readout variant for our scale.</li>
-          <li><strong>Frozen encoders:</strong> CLIP [5] for vision, wav2vec2 [6] for audio, RoBERTa [7] for text.</li>
+          <li><strong>Attention Bottlenecks</strong> (Nagrani et al.) [4]. Show that cross-modal attention can match heavy late-fusion pipelines at lower cost; we use a lighter variant suited to our dataset size.</li>
+          <li><strong>Large pretrained encoders [5, 6, 7]</strong> transfer well to downstream tasks with only a small head trained on top — the frozen-encoder paradigm we rely on here.</li>
         </ul>
       </section>
 
-      <!-- Plot twist -->
+      <!-- The Seed Trap -->
       <section class="box">
-        <h2>Plot twist</h2>
-        <p>
-          Our <strong>first run, with one random seed</strong>, showed
-          fusion winning by 5 accuracy points and we almost wrote a
-          paper claiming &laquo;fusion wins everywhere.&raquo; Re-running
-          across three seeds {42, 1337, 2025} made that gap
-          <strong>vanish into seed variance</strong>; only the AUROC
-          gain held up.
-        </p>
-        <p>
-          <span class="label">Lesson.</span>
-          A single seed can deceive. Multi-seed analysis is what
-          separates a confident headline from an honest one.
-        </p>
-      </section>
-
-      <!-- References -->
-      <section class="box">
-        <h2>References</h2>
-        <ol style="margin:0; padding-left:8mm; font-size:18pt; line-height:1.28; column-count:2; column-gap:8mm;">
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">M. Das et al., "HateMM: A Multi-Modal Dataset for Hate Video Classification," <em>Proc. ICWSM</em>, 2023.</li>
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">D. Kiela et al., "The Hateful Memes Challenge," <em>Proc. NeurIPS</em>, 2020.</li>
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">S. Pramanick et al., "MOMENTA: A Multimodal Framework for Detecting Harmful Memes," <em>Findings of EMNLP</em>, 2021.</li>
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Nagrani et al., "Attention Bottlenecks for Multimodal Fusion," <em>Proc. NeurIPS</em>, 2021.</li>
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Radford et al., "Learning Transferable Visual Models From Natural Language Supervision (CLIP)," <em>Proc. ICML</em>, 2021.</li>
-          <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Baevski et al., "wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations," <em>Proc. NeurIPS</em>, 2020.</li>
-          <li style="break-inside:avoid;">Y. Liu et al., "RoBERTa: A Robustly Optimized BERT Pretraining Approach," <em>arXiv:1907.11692</em>, 2019.</li>
-        </ol>
+        <h2>The Seed Trap</h2>
+        <div class="seed-trap">
+          <p style="font-size:24pt; margin:0 0 3mm; line-height:1.30;">
+            Our <strong>first run (seed 42 only)</strong> showed fusion beating
+            text by <strong>+5.5 accuracy points</strong> — a headline result.
+            Re-running across three seeds {42, 1337, 2025} made the gap
+            <strong>vanish completely</strong>.
+          </p>
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Seed 42 alone</th><th>3-seed mean &plusmn; std</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fusion (V+A+T)</td>
+                <td><strong>83.5% acc &nbsp; F1 0.824</strong></td>
+                <td>79.2% &plusmn; 5.2% &nbsp; F1 0.782 &plusmn; 0.055</td>
+              </tr>
+              <tr>
+                <td>Text only</td>
+                <td>78.0% acc &nbsp; F1 0.763</td>
+                <td>79.2% &plusmn; 2.1% &nbsp; F1 0.781 &plusmn; 0.021</td>
+              </tr>
+              <tr>
+                <td><strong>Gap</strong></td>
+                <td class="gone"><strong>+5.5 pp</strong></td>
+                <td class="gone"><strong>0.0 pp &mdash; dead tie</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="lesson">
+            Only AUROC survived multi-seed scrutiny (0.876 vs 0.827).
+            Single-seed reporting would have published a false claim.
+          </div>
+        </div>
       </section>
 
     </div><!-- /left column -->
@@ -551,9 +586,32 @@
         </table>
         <!-- END_TABLE_1 -->
 
-        <!-- BEGIN_TABLE_2 -->
-        <table class="results" style="margin-top: 4mm;">
-          <caption>Table 2. Per-target-community test accuracy (n &ge; 15), mean &plusmn; std over 3 seeds.</caption>
+        <div class="chart" style="margin-top: 4mm;">
+          <img src="bar_chart.png" alt="Accuracy and AUROC bar chart across the four models, multi-seed">
+          <p class="caption">Figure 1. Test macro-F1 for all seven modality configurations, mean &plusmn; std over 3 seeds {42, 1337, 2025}.</p>
+        </div>
+
+        <div class="key-obs">
+          <h3>Key observations</h3>
+          <p>
+            <strong>Each added modality lifts AUROC monotonically.</strong>
+            From audio alone (0.77) to full fusion (0.88), every step in
+            the seven-row ablation buys ranking signal. Accuracy, in
+            contrast, plateaus at the text-only level (0.79).
+          </p>
+          <p>
+            <strong>Video is the stronger complement to text.</strong>
+            Text &rarr; V+T adds +0.030 AUROC; text &rarr; A+T adds only +0.012.
+            Adding the third modality on top of any pair gains another ~+0.02.
+          </p>
+        </div>
+      </section>
+
+      <!-- Fairness Analysis -->
+      <section class="box">
+        <h2>Fairness Analysis</h2>
+        <table class="results">
+          <caption>Table 2. Per-community test accuracy (n &ge; 15), mean &plusmn; std over 3 seeds.</caption>
           <thead>
             <tr><th>Community</th><th>n</th><th>Fusion</th><th>Video</th><th>Audio</th><th>Text</th></tr>
           </thead>
@@ -581,40 +639,12 @@
             </tr>
           </tbody>
         </table>
-        <!-- END_TABLE_2 -->
-        <p style="font-size:22pt; color:#595959; margin:3mm 0 0 0; line-height:1.3;">
-          &#9888; <strong>Others (n = 39)</strong>: this subset is predominantly
-          non-hate videos, so the model scores high accuracy simply by predicting
-          the majority class — not because it genuinely discriminates hate content
-          in that group.
+        <p style="font-size:22pt; color:#595959; margin:2mm 0 0; line-height:1.28;">
+          &#9888; <strong>Others (n = 39)</strong> is predominantly non-hate in our test split —
+          high accuracy reflects majority-class prediction, not genuine discrimination.
+          Text wins on <em>Others</em> and <em>Jews</em>; fusion leads only on <em>Blacks</em>.
+          No single model is best across all communities.
         </p>
-
-        <div class="chart" style="margin-top: 4mm;">
-          <img src="bar_chart.png" alt="Accuracy and AUROC bar chart across the four models, multi-seed">
-          <p class="caption">Figure 1. Test macro-F1 for all seven modality configurations, mean &plusmn; std over 3 seeds {42, 1337, 2025}.</p>
-        </div>
-
-        <div class="key-obs">
-          <h3>Key observations</h3>
-          <p>
-            <strong>Each added modality lifts AUROC monotonically.</strong>
-            From audio alone (0.77) to full fusion (0.88), every step in
-            the seven-row ablation buys ranking signal. Accuracy, in
-            contrast, plateaus at the text-only level (0.79).
-          </p>
-          <p>
-            <strong>Video adds more than audio on top of text.</strong>
-            Going text &rarr; V+T adds +0.030 AUROC; text &rarr; A+T adds
-            only +0.012. V+T and V+A themselves are tied within seed
-            variance. The third modality on top of any pair adds another
-            ~+0.02.
-          </p>
-          <p>
-            Per-community, text wins <em>Others</em> (0.86), V+A+T ties
-            V+T on <em>Blacks</em> (0.75), and <em>Jews</em> (n = 15) is
-            too noisy to call. No single recipe wins everywhere.
-          </p>
-        </div>
       </section>
 
       <!-- Limitations -->
@@ -622,9 +652,9 @@
         <h2>Limitations</h2>
         <ul>
           <li><strong>Small test set (n = 109).</strong> Per-community stats for groups with n &lt; 15 are excluded; reported groups still carry appreciable variance.</li>
-          <li><strong>Heuristic community-label normalisation.</strong> Multi-target labels canonicalised to a sorted comma-joined form, conflating intersectional rows with singleton ones.</li>
+          <li><strong>Platform specificity.</strong> Models trained on BitChute may not generalise to lower-toxicity platforms where the visual and linguistic style of hateful content differs substantially.</li>
           <li><strong>ASR quality varies.</strong> Shouting, music, and accented speech degrade the text modality on a subset.</li>
-          <li><strong>Architectural choices.</strong> Frozen backbones cap absolute performance, and wav2vec2 hidden states are pooled to a fixed 64 tokens (over-averaging long videos).</li>
+          <li><strong>Frozen backbones cap performance.</strong> Audio is compressed to 64 fixed slots by wav2vec2 mean-pooling, losing detail for long videos. Fine-tuning even one encoder would improve absolute numbers but break the controlled ablation.</li>
         </ul>
       </section>
 
@@ -632,16 +662,13 @@
       <section class="box">
         <h2>Conclusion</h2>
         <p>
-          Fusing three frozen pretrained encoders through a small
-          transformer head <strong>robustly improves AUROC</strong>
-          over every unimodal baseline on HateMM
-          (0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text). On
-          threshold-dependent metrics the gain washes out into seed
-          variance, a finding single-seed reporting would have missed.
-          Per-community, text alone is competitive with or better than
-          fusion on every reported group, so fusion delivers a
-          calibrated ranking gain rather than a uniform threshold-level
-          improvement over a strong text-only baseline.
+          Fusing three frozen encoders through a small transformer head
+          <strong>robustly improves AUROC</strong> over every unimodal
+          baseline (0.88 &plusmn; 0.01 vs 0.83 &plusmn; 0.02 for text alone).
+          On accuracy and F1 the gain disappears once you run three seeds —
+          something single-seed reporting would have missed entirely.
+          Fusion improves how well the model <em>ranks</em> videos by risk;
+          it does not improve how many it classifies correctly.
         </p>
         <p>
           <span class="label">Practical implication.</span>
@@ -649,7 +676,7 @@
           cost/quality trade-off:
           <strong>(i) V+A+T (AUROC 0.88 &plusmn; 0.01)</strong> when
           ranking quality matters most;
-          <strong>(ii) V+T (AUROC 0.86 &plusmn; 0.02)</strong> as a
+          <strong>(ii) V+T (AUROC 0.86 &plusmn; 0.01)</strong> as a
           cost-aware sweet spot &mdash; within 0.02 AUROC of full
           fusion with no audio pipeline at all, capturing ~60% of the
           AUROC lift over text-only;
@@ -663,13 +690,33 @@
 
   </div><!-- /cols -->
 
-  <!-- ============== FOOTER ============== -->
-  <div class="footer" style="display:flex; align-items:center; justify-content:center; gap:6mm;">
-    <img src="repo_qr.png" alt="Scan for code repo" style="width: 22mm; height: 22mm; flex: 0 0 auto;">
-    <div style="text-align:left; line-height:1.25;">
-      <div><strong>Scan for the full code release</strong> &middot; github.com/YDIB11/Mini-Project</div>
-      <div style="color:#595959;">EE-559 Deep Learning &middot; EPFL, Spring 2026</div>
+  <!-- ============== REFERENCES + QR (full width) ============== -->
+  <div style="border-top: 1mm solid #c41e1a; padding-top: 4mm; display:flex; align-items:flex-start; gap:8mm;">
+
+    <!-- references -->
+    <div style="flex:1 1 auto;">
+      <div style="font-size:28pt; font-weight:800; color:#c41e1a; margin-bottom:4mm;">References</div>
+      <ol style="margin:0; padding-left:8mm; font-size:20pt; line-height:1.30; column-count:3; column-gap:10mm;">
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">M. Das et al., "HateMM," <em>ICWSM</em>, 2023.</li>
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">D. Kiela et al., "Hateful Memes Challenge," <em>NeurIPS</em>, 2020.</li>
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">S. Pramanick et al., "MOMENTA," <em>EMNLP Findings</em>, 2021.</li>
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Nagrani et al., "Attention Bottlenecks for Multimodal Fusion," <em>NeurIPS</em>, 2021.</li>
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Radford et al., "CLIP," <em>ICML</em>, 2021.</li>
+        <li style="margin-bottom:2.5mm; break-inside:avoid;">A. Baevski et al., "wav2vec 2.0," <em>NeurIPS</em>, 2020.</li>
+        <li style="break-inside:avoid;">Y. Liu et al., "RoBERTa," <em>arXiv:1907.11692</em>, 2019.</li>
+      </ol>
     </div>
+
+    <!-- QR + course info -->
+    <div style="flex:0 0 auto; display:flex; align-items:center; gap:5mm; border-left:0.3mm solid #d4d4d4; padding-left:10mm;">
+      <img src="repo_qr.png" alt="Scan for code repo" style="width:34mm; height:34mm; display:block;">
+      <div style="font-size:22pt; line-height:1.35; color:#595959;">
+        <div style="font-weight:700; color:#1a1a1a; font-size:24pt;">Scan for code</div>
+        <div>github.com/YDIB11/Mini-Project</div>
+        <div>EE-559 Deep Learning · EPFL 2026</div>
+      </div>
+    </div>
+
   </div>
 
 </div>
