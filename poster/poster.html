@@ -509,11 +509,11 @@
           <tbody>
             <tr class="fusion">
               <td>V + A + T</td>
-              <td>0.79 &plusmn; 0.05</td>
-              <td>0.78 &plusmn; 0.05</td>
+              <td class="winner">0.79 &plusmn; 0.05</td>
+              <td class="winner">0.78 &plusmn; 0.05</td>
               <td>0.74 &plusmn; 0.08</td>
-              <td>0.74 &plusmn; 0.08</td>
-              <td>0.88 &plusmn; 0.01</td>
+              <td class="winner">0.74 &plusmn; 0.08</td>
+              <td class="winner">0.88 &plusmn; 0.01</td>
             </tr>
             <tr>
               <td>V + A</td>
@@ -541,9 +541,9 @@
             </tr>
             <tr>
               <td>Text only</td>
-              <td>0.79 &plusmn; 0.02</td>
-              <td>0.78 &plusmn; 0.02</td>
-              <td>0.75 &plusmn; 0.06</td>
+              <td class="winner">0.79 &plusmn; 0.02</td>
+              <td class="winner">0.78 &plusmn; 0.02</td>
+              <td class="winner">0.75 &plusmn; 0.06</td>
               <td>0.73 &plusmn; 0.08</td>
               <td>0.83 &plusmn; 0.02</td>
             </tr>
@@ -598,10 +598,16 @@
           </tbody>
         </table>
         <!-- END_TABLE_2 -->
+        <p style="font-size:22pt; color:#595959; margin:3mm 0 0 0; line-height:1.3;">
+          &#9888; <strong>Others (n = 39)</strong>: this subset is predominantly
+          non-hate videos, so the model scores high accuracy simply by predicting
+          the majority class — not because it genuinely discriminates hate content
+          in that group.
+        </p>
 
         <div class="chart" style="margin-top: 4mm;">
           <img src="bar_chart.png" alt="Accuracy and AUROC bar chart across the four models, multi-seed">
-          <p class="caption">Figure 1. Test accuracy and AUROC across the four models, mean &plusmn; std over 3 seeds, sorted ascending by AUROC.</p>
+          <p class="caption">Figure 1. Test macro-F1 for all seven modality configurations, mean &plusmn; std over 3 seeds {42, 1337, 2025}.</p>
         </div>
 
         <div class="key-obs">
