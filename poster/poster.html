@@ -513,7 +513,31 @@
               <td>0.78 &plusmn; 0.05</td>
               <td>0.74 &plusmn; 0.08</td>
               <td>0.74 &plusmn; 0.08</td>
-              <td class="winner">0.88 &plusmn; 0.01</td>
+              <td>0.88 &plusmn; 0.01</td>
+            </tr>
+            <tr>
+              <td>V + A</td>
+              <td>0.77 &plusmn; 0.01</td>
+              <td>0.76 &plusmn; 0.00</td>
+              <td>0.71 &plusmn; 0.04</td>
+              <td>0.71 &plusmn; 0.08</td>
+              <td>0.85 &plusmn; 0.01</td>
+            </tr>
+            <tr>
+              <td>V + T</td>
+              <td>0.78 &plusmn; 0.03</td>
+              <td>0.77 &plusmn; 0.02</td>
+              <td>0.73 &plusmn; 0.07</td>
+              <td>0.72 &plusmn; 0.04</td>
+              <td>0.86 &plusmn; 0.01</td>
+            </tr>
+            <tr>
+              <td>A + T</td>
+              <td>0.76 &plusmn; 0.02</td>
+              <td>0.75 &plusmn; 0.02</td>
+              <td>0.71 &plusmn; 0.05</td>
+              <td>0.69 &plusmn; 0.08</td>
+              <td>0.84 &plusmn; 0.00</td>
             </tr>
             <tr>
               <td>Text only</td>
@@ -583,23 +607,21 @@
         <div class="key-obs">
           <h3>Key observations</h3>
           <p>
-            <strong>Robust ranking gain, noisy threshold gain.</strong>
-            Fusion wins AUROC by 5 points over the strongest unimodal
-            (text), with the gap exceeding twice the combined standard
-            deviation. On threshold-dependent metrics (accuracy, F1)
-            fusion matches text on average with markedly higher per-seed
-            variance (std 0.05 vs 0.02).
+            <strong>Each added modality lifts AUROC monotonically.</strong>
+            From audio alone (0.77) to full fusion (0.88), every step in
+            the seven-row ablation buys ranking signal. Accuracy, in
+            contrast, plateaus at the text-only level (0.79).
           </p>
           <p>
-            <strong>Text is the strongest unimodal baseline</strong> in
-            this dataset, consistent with the verbal nature of much hate
-            content.
+            <strong>Video is text's best complement.</strong>
+            Among pairwise combinations, V+T scores highest on AUROC
+            (0.86): adding video lifts text-only by +0.030, vs +0.012
+            from adding audio. The third modality adds a further +0.019.
           </p>
           <p>
-            Per-community, all fusion-vs-text gaps lie within combined
-            seed variance. On the smallest group <em>(Jews, n = 15)</em>
-            the fusion model's seed std (0.13) <em>exceeds</em> its mean
-            advantage by an order of magnitude.
+            Per-community, text wins <em>Others</em> (0.86), V+A+T ties
+            V+T on <em>Blacks</em> (0.75), and <em>Jews</em> (n = 15) is
+            too noisy to call. No single recipe wins everywhere.
           </p>
         </div>
       </section>

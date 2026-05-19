@@ -29,9 +29,12 @@ FALLBACK = {
 }
 
 DISPLAY_NAME = {
-    "video": "Video",
-    "audio": "Audio",
-    "text": "Text",
+    "audio":            "A",
+    "video":            "V",
+    "text":             "T",
+    "audio+text":       "A+T",
+    "video+audio":      "V+A",
+    "video+text":       "V+T",
     "video+audio+text": "V+A+T",
 }
 
@@ -82,7 +85,7 @@ def main() -> None:
         "ps.fonttype":      42,
     })
 
-    fig, ax = plt.subplots(figsize=(3.6, 2.6))
+    fig, ax = plt.subplots(figsize=(5.6, 2.8))
     x = np.arange(len(rows))
     w = 0.38
     err_kw = {"elinewidth": 0.8, "ecolor": EDGE_COLOR, "capsize": 3, "capthick": 0.8}
