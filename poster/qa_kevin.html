@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Q&amp;A cheat sheet - Kevin's section</title>
+<style>
+@page { size: A4 portrait; margin: 12mm 14mm; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: "Helvetica Neue", "Arial", sans-serif;
+  color: #1a1a1a;
+  font-size: 10pt;
+  line-height: 1.4;
+}
+h1 {
+  font-size: 20pt;
+  margin: 0 0 1mm;
+  font-weight: 800;
+  letter-spacing: -0.4pt;
+}
+.subtitle {
+  color: #c41e1a;
+  font-weight: 600;
+  font-size: 11pt;
+  margin: 0 0 6mm;
+}
+.scope {
+  background: #fff5f5;
+  border-left: 3mm solid #c41e1a;
+  padding: 3mm 5mm;
+  margin-bottom: 6mm;
+  border-radius: 1mm;
+  font-size: 9.5pt;
+}
+.scope p { margin: 0; }
+.qa {
+  margin-bottom: 4.5mm;
+  page-break-inside: avoid;
+}
+.q {
+  font-weight: 800;
+  font-size: 11pt;
+  color: #c41e1a;
+  margin: 0 0 1.5mm;
+}
+.q .num {
+  display: inline-block;
+  width: 7mm;
+  color: #1a1a1a;
+  font-weight: 900;
+}
+.a {
+  font-size: 10.5pt;
+  line-height: 1.42;
+  padding-left: 7mm;
+  border-left: 0.8mm solid #c41e1a;
+  margin: 0 0 1.5mm;
+}
+.a strong { font-weight: 800; }
+.tip {
+  font-size: 9pt;
+  color: #707070;
+  font-style: italic;
+  padding-left: 7mm;
+  margin: 0;
+}
+.tip::before { content: "Tip: "; font-weight: 700; font-style: normal; color: #c41e1a; }
+.meta {
+  margin-top: 8mm;
+  padding: 4mm 5mm;
+  background: #1a1a1a;
+  color: white;
+  border-radius: 1.5mm;
+  font-size: 9.5pt;
+  line-height: 1.4;
+}
+.meta h2 {
+  margin: 0 0 2mm;
+  font-size: 11pt;
+  color: white;
+  letter-spacing: 0.3pt;
+}
+.meta ul { margin: 0; padding-left: 5mm; }
+.meta li { margin-bottom: 1mm; }
+.meta li:last-child { margin-bottom: 0; }
+.footer {
+  margin-top: 5mm;
+  font-size: 8.5pt;
+  color: #888;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>Q&amp;A cheat sheet</h1>
+<p class="subtitle">Kevin's section &middot; Results, AUROC, and the Seed Trap</p>
+
+<div class="scope">
+<p>Ten likely questions on your part of the talk, with answers tuned to ~20 seconds spoken. Read tonight, skim before the session. If a question isn't on this sheet, fall back to the mnemonic: <strong>AUROC up, accuracy flat, Seed Trap</strong>.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">1.</span>What does AUROC measure that accuracy doesn't?</p>
+  <p class="a">"AUROC measures <strong>ranking quality</strong>: the probability that a random hate video gets a higher hate-score than a random non-hate one. Accuracy measures whether the binary call is right at a fixed threshold. A model can rank perfectly but still pick a bad threshold. Fusion improves the ranking but not the threshold-level decisions."</p>
+  <p class="tip">Land on the word "ranking". That's the concept the examiner is testing.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">2.</span>Why do you trust three seeds? Couldn't three still be too few?</p>
+  <p class="a">"Three is the minimum that lets us catch a single-seed fluke, and it caught one. With three runs we report mean and standard deviation, so the reader sees when a gap is inside seed variance (as accuracy was) and when it isn't (as AUROC clearly is). More seeds would tighten the bars but not change the qualitative story."</p>
+  <p class="tip">If pushed: "We agree five seeds would be stronger. Time and compute were the constraint."</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">3.</span>Why does fusion improve AUROC but not accuracy?</p>
+  <p class="a">"Adding modalities <strong>sharpens how the model separates the two classes</strong>: the score distributions pull apart, so ranking improves. But the decision threshold doesn't automatically move to the new optimum, so the accuracy at a fixed threshold stays put. To convert ranking quality into accuracy you'd need to re-tune the threshold on validation."</p>
+  <p class="tip">This is the conceptual core of your section. Practice this answer most.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">4.</span>Is the five-point AUROC gain actually significant?</p>
+  <p class="a">"The gap is 0.88 plus-minus 0.01 versus 0.83 plus-minus 0.02, so the means differ by more than the combined standard deviations across seeds. The gap holds in every seed individually. A formal paired bootstrap test would strengthen the claim further, and we agree that's the right next step."</p>
+  <p class="tip">Don't claim a significance test you didn't run. Acknowledging that gap is the honest move.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">5.</span>Why is text alone already so strong?</p>
+  <p class="a">"Most hateful BitChute content carries the slur or epithet in <strong>speech</strong>, so the transcript already captures a lot of the discriminating signal. Audio and video add ranking information on top of that, but don't change the binary call much. This is a statement about HateMM's distribution, not about multimodal modeling in general."</p>
+  <p class="tip">Punchline: it's the dataset, not the method.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">6.</span>What was the +5.5 accuracy fluke, really? Was the first run wrong?</p>
+  <p class="a">"It wasn't wrong, it was <strong>one realization of the random initialization and data shuffling</strong>. That run happened to land in a basin that scored well on this particular test set. Two other seeds landed differently. The average across seeds is the right summary; any single run is a sample from a distribution."</p>
+  <p class="tip">The point of the Seed Trap is humility, not failure. Frame it as method.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">7.</span>If accuracy and AUROC disagree, what use is the model in practice?</p>
+  <p class="a">"Two options. <strong>One:</strong> re-tune the threshold on validation to maximise accuracy under the fused scores. That's free and converts some AUROC gain into accuracy. <strong>Two:</strong> deploy the fused model as a <strong>triage tool</strong> that ranks videos for a human moderator rather than as an autonomous yes/no classifier. The ranking gain is what matters there."</p>
+  <p class="tip">This question is asking "so what?" Have the deployment answer ready.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">8.</span>Why is V+T a better pair than A+T?</p>
+  <p class="a">"V+T reaches 0.86 AUROC against A+T at 0.84. Our reading: the transcript already carries the linguistic signal, and video adds <strong>visual context the transcript can't capture</strong>, like flags, symbols, or framing. Audio is more redundant with text, because the transcript is derived from the audio in the first place, so adding the source on top of the transcript buys less than adding an independent modality."</p>
+  <p class="tip">Keyword: <em>redundancy</em>. Signals you understand multimodal information flow.</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">9.</span>Why early-stop on macro-F1 rather than AUROC?</p>
+  <p class="a">"Macro-F1 is the standard threshold-level metric for imbalanced binary classification, and we wanted the checkpoint that performs best at the actual yes/no decision. Stopping on AUROC would optimise ranking but might pick a model that's worse at the final call. It's also consistent with our finding: AUROC and macro-F1 disagree, and we chose F1 to be the more conservative check."</p>
+  <p class="tip">Frame it as "we anticipated the tension" rather than "we picked one at random".</p>
+</div>
+
+<div class="qa">
+  <p class="q"><span class="num">10.</span>Why use the same architecture for all seven configurations?</p>
+  <p class="a">"<strong>Fairness of comparison.</strong> If the unimodal baselines used smaller heads and the fusion model used a bigger one, we'd be measuring capacity, not modality information. By holding architecture fixed and only varying inputs, the seven-row ablation isolates exactly what each modality contributes. Same architecture, same training recipe, only inputs differ."</p>
+  <p class="tip">Memorise the last sentence. It's the one-line answer to half the methodology questions.</p>
+</div>
+
+<div class="meta">
+  <h2>If you blank</h2>
+  <ul>
+    <li><strong>Three lines that fit any question:</strong> "AUROC measures ranking quality, not threshold accuracy." / "We re-ran with three seeds and the accuracy gap vanished; only AUROC survived." / "It's a real ranking improvement, not a free accuracy gain."</li>
+    <li><strong>If you don't know:</strong> "Good question, that's not in our current analysis, but my intuition would be..." Honesty beats bluffing.</li>
+    <li><strong>If two people ask at once:</strong> Pick one, answer cleanly, then "and to your question..." Don't try to braid them.</li>
+  </ul>
+</div>
+
+<div class="footer">EE-559 Deep Learning &middot; Group 07 &middot; Poster Q&amp;A aid, Kevin</div>
+
+</body>
+</html>
