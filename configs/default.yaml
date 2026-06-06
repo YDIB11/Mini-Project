@@ -1,5 +1,5 @@
 # Base config for HateMM multimodal experiments.
-# Encoders are frozen — only the fusion module is trained.
+# Encoders are frozen; only the fusion module is trained.
 
 seed: 42
 

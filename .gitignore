@@ -21,11 +21,11 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
-# Data — never committed (HateMM is on cluster storage)
+# Data: never committed (HateMM is downloaded once per machine)
 data/*
 !data/.gitkeep
 
-# Derived artifacts (top-level dirs only — do not match src/features/)
+# Derived artefacts (top-level dirs only; do not match src/features/)
 /cache/
 /features/
 /checkpoints/
@@ -38,6 +38,21 @@ data/*
 *.ckpt
 *.npy
 *.npz
+
+# LaTeX build intermediates
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.toc
+
+# Hugging Face cache (encoder weights live here on first run)
+.cache/
+hf_cache/
 
 # Env / secrets
 .env

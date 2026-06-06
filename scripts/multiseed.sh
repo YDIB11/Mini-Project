@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Train and evaluate all 4 modality configurations across multiple seeds.
-# 4 modalities x 3 seeds = 12 training + eval pairs.
+# Train and evaluate all 7 modality configurations across multiple seeds.
+# 7 modality subsets x 3 seeds = 21 training + eval pairs (about 4 hours on a V100).
 #
 # Usage on Noto with the course kernel:
 #   PY=/home/gnoto_venvs/ee559_venv/bin/python3 bash scripts/multiseed.sh
