@@ -78,7 +78,7 @@ Two specific limitations in this prior work inform our design. Single-seed repor
     io/.style={align=center, font=\scriptsize},
     outnode/.style={align=center, font=\scriptsize\bfseries, color=yellow!40!black},
     arr/.style={->, semithick, gray!70},
-    dim/.style={font=\tiny, midway, above=-1pt, color=gray!70!black},
+    dim/.style={font=\fontsize{4.5pt}{5.5pt}\selectfont, midway, above=1pt, color=gray!70!black},
 ]
 \node[io] (vin) {Video\\frames};
 \node[io, below=10mm of vin] (ain) {Audio\\track};
@@ -88,9 +88,9 @@ Two specific limitations in this prior work inform our design. Single-seed repor
 \node[enc, right=of ain] (w2v)  {wav2vec2-base\\(frozen)};
 \node[enc, right=of tin] (rob)  {RoBERTa-base\\(frozen)};
 
-\node[train, right=of clip] (vp) {Linear\\$\to d_m$};
-\node[train, right=of w2v]  (ap) {Linear\\$\to d_m$};
-\node[train, right=of rob]  (tp) {Linear\\$\to d_m$};
+\node[train, right=14mm of clip] (vp) {Linear\\$\to d_m$};
+\node[train, right=14mm of w2v]  (ap) {Linear\\$\to d_m$};
+\node[train, right=14mm of rob]  (tp) {Linear\\$\to d_m$};
 
 \node[train, right=12mm of ap, minimum width=22mm] (fuse) {[CLS] $\oplus$\\concat};
 \node[train, right=of fuse, minimum width=28mm] (tx) {Transformer\\2 layers, 4 heads\\$d_m{=}256$};
